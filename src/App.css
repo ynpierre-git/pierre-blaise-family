@@ -131,6 +131,19 @@
   font-size: clamp(1rem, 2.2vw, 1.12rem);
 }
 
+.roots {
+  margin: 0.9rem auto 0;
+  color: var(--forest);
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  font-style: italic;
+}
+
+.roots strong {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--forest-deep);
+}
+
 /* ===== Tabs ===== */
 .tabs {
   display: flex;

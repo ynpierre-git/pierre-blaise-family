@@ -34,14 +34,16 @@ export default function App() {
 
       <header className="masthead">
         <div className="masthead-inner">
-          <p className="eyebrow">Est. — A Living Record</p>
+          <p className="eyebrow">Pierre-Blaise Family Hub</p>
           <h1 className="title">
             <span className="title-line">Pierre-Blaise</span>
             <span className="title-line title-accent">Family Tree</span>
           </h1>
           <p className="lede">
-            A shared home for our people — where we keep our records, mark our
-            gatherings, and never miss a birthday.
+            Where memories are cherished and connections grow stronger.
+          </p>
+          <p className="roots">
+            Our family has its roots in <strong>Arcahaie, Haïti</strong> 🇭🇹
           </p>
         </div>
       </header>
