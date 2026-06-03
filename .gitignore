@@ -1,0 +1,19 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# Secrets — never commit. Keep all keys in env vars only.
+.env
+**/.env
+.env.*
+!.env.example
+
+# Local JSON file-DB (pre-Supabase leftover)
+server/pbfam.db.json
+
+# Vercel
+.vercel
