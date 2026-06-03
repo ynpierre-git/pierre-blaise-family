@@ -48,11 +48,6 @@ export default function Login({ onLogin }) {
         <button type="submit" className="btn-primary">
           Sign In
         </button>
-
-        <p className="login-hint">
-          First time? Default login is <code>pbfam</code> / <code>password123</code> —
-          change it once you're in.
-        </p>
       </form>
     </section>
   )
