@@ -4,11 +4,13 @@ import Demographics from './components/Demographics.jsx'
 import FamilyTree from './components/FamilyTree.jsx'
 import Events from './components/Events.jsx'
 import Birthdays from './components/Birthdays.jsx'
+import JeanMariePierre from './components/JeanMariePierre.jsx'
 import Login from './components/Login.jsx'
 
 const TABS = [
   { id: 'demographics', label: 'Demographics', hint: 'Admin' },
   { id: 'tree', label: 'Family Tree', hint: 'Lineage' },
+  { id: 'jmpierre', label: 'Jean-Marie Pierre', hint: 'Historian' },
   { id: 'events', label: 'Events', hint: 'Gatherings' },
   { id: 'birthdays', label: 'Birthdays', hint: 'This Month' },
 ]
@@ -78,6 +80,7 @@ export default function App() {
         {active === 'demographics' &&
           (authed ? <Demographics onLogout={logout} /> : <Login onLogin={login} />)}
         {active === 'tree' && <FamilyTree />}
+        {active === 'jmpierre' && <JeanMariePierre />}
         {active === 'events' &&
           (authed ? <Events /> : <Login onLogin={login} />)}
         {active === 'birthdays' && <Birthdays />}
