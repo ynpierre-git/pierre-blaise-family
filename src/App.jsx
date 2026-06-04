@@ -12,7 +12,7 @@ const TABS = [
   { id: 'tree', label: 'Family Tree', hint: 'Lineage' },
   { id: 'events', label: 'Events', hint: 'Gatherings' },
   { id: 'birthdays', label: 'Birthdays', hint: 'This Month' },
-  { id: 'jmpierre', label: 'Jean-Marie Pierre', hint: 'Historian' },
+  { id: 'jmpierre', label: 'Jean-Marie Pierre', hint: 'About' },
 ]
 
 export default function App() {
