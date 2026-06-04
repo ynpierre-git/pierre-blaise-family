@@ -48,7 +48,8 @@ export default function App() {
             Our family has its roots in <strong>Arcahaie, Haïti</strong> 🇭🇹
           </p>
           <p className="thanks">
-            A heartfelt thank-you to <strong>Jean-Marie Pierre</strong> for his
+            A heartfelt <em className="thanks-ty">THANK YOU</em> to{' '}
+            <strong>Jean-Marie Pierre</strong> for his
             remarkable work gathering and preserving our family’s history. His
             dedication, patience, and vision have given us a priceless gift, one
             that strengthens our identity and keeps our legacy alive for

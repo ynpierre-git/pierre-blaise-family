@@ -177,6 +177,13 @@
   color: var(--ochre);
 }
 
+.thanks-ty {
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
 /* ===== Tabs ===== */
 .tabs {
   display: flex;
