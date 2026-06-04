@@ -115,9 +115,11 @@ let bucketReady = false
 // Create the public bucket once (idempotent) so there is no manual setup step.
 async function ensureBucket() {
   if (bucketReady) return
+  // No explicit fileSizeLimit: the bucket inherits the project's global storage
+  // limit. (Setting one above the global limit makes createBucket fail.) Raise
+  // the global limit in Supabase → Settings → Storage to allow larger videos.
   const { error } = await supabase.storage.createBucket(MEDIA_BUCKET, {
     public: true,
-    fileSizeLimit: '200MB',
   })
   // "already exists" is fine; anything else is a real error.
   if (error && !/already exists/i.test(error.message || '')) throw error
