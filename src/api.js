@@ -28,6 +28,11 @@ export const eventsApi = {
   remove: (id) => request('DELETE', `/api/events/${id}`),
 }
 
+export const contentApi = {
+  get: (key) => request('GET', `/api/content/${key}`),
+  save: (key, value) => request('PUT', `/api/content/${key}`, value),
+}
+
 // Reads a File into a base64 data URL so it can be stored in the database.
 export function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {

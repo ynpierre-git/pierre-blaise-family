@@ -92,4 +92,43 @@ export const db = {
   },
   updateEvent: (id, patch) => patchIn('events', id, patch),
   removeEvent: (id) => removeFrom('events', id),
+
+  // ── Singleton content (e.g. the Jean-Marie Pierre tribute) ──
+  // Returns the stored data object, or null if nothing saved. If the `content`
+  // table hasn't been created yet (migration not run), also returns null so the
+  // page falls back to its default copy instead of erroring.
+  getContent: (key) => getContentRow(key),
+  setContent: (key, value) => upsertContentRow(key, value),
+}
+
+async function getContentRow(key) {
+  const { data, error } = await supabase
+    .from('content')
+    .select('data')
+    .eq('key', key)
+    .maybeSingle()
+  if (error) {
+    if (isMissingTable(error)) return null
+    throw error
+  }
+  return data ? data.data : null
+}
+
+async function upsertContentRow(key, value) {
+  const { data, error } = await supabase
+    .from('content')
+    .upsert({ key, data: value, updated_at: new Date().toISOString() })
+    .select('data')
+    .single()
+  if (error) throw error
+  return data.data
+}
+
+// Postgres "undefined_table" (42P01), surfaced by PostgREST when the migration
+// in supabase-schema.sql hasn't been run yet.
+function isMissingTable(error) {
+  return (
+    error.code === '42P01' ||
+    /relation .*content.* does not exist/i.test(error.message || '')
+  )
 }

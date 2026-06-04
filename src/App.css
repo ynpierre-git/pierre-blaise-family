@@ -1769,6 +1769,19 @@
   color: var(--ink-soft);
 }
 
+.jmp-edit-photo {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.jmp-edit-photo .jmp-photo {
+  width: 120px;
+  height: 120px;
+}
+
 @media (max-width: 720px) {
   .jmp-hero {
     flex-direction: column;

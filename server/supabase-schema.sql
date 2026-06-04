@@ -21,6 +21,15 @@ create table if not exists public.events (
   created_at timestamptz not null default now()
 );
 
+-- Singleton site content keyed by a string (e.g. the Jean-Marie Pierre tribute
+-- under key 'jeanmarie'). `data` holds the editable fields (text + photo as a
+-- data URL), so the About page can be edited in-app instead of in code.
+create table if not exists public.content (
+  key        text primary key,
+  data       jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
 -- Newest-first members, oldest-first events — matches the old in-memory order.
 create index if not exists members_created_at_idx on public.members (created_at desc);
 create index if not exists events_created_at_idx  on public.events  (created_at asc);
@@ -31,3 +40,4 @@ create index if not exists events_created_at_idx  on public.events  (created_at 
 -- entirely — all data access goes through the API, exactly as before.
 alter table public.members enable row level security;
 alter table public.events  enable row level security;
+alter table public.content enable row level security;

@@ -78,7 +78,7 @@ export default function App() {
         {active === 'demographics' &&
           (authed ? <Demographics onLogout={logout} /> : <Login onLogin={login} />)}
         {active === 'tree' && <FamilyTree />}
-        {active === 'jmpierre' && <JeanMariePierre />}
+        {active === 'jmpierre' && <JeanMariePierre authed={authed} onLogin={login} />}
         {active === 'events' && <Events authed={authed} onLogin={login} />}
         {active === 'birthdays' && <Birthdays />}
       </main>

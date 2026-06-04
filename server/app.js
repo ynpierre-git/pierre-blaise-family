@@ -68,6 +68,14 @@ app.delete('/api/events/:id', wrap(async (req, res) => {
   return ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Event not found' })
 }))
 
+// ── Singleton content (Jean-Marie Pierre tribute, etc.) ──
+app.get('/api/content/:key', wrap(async (req, res) =>
+  res.json(await db.getContent(req.params.key)),
+))
+app.put('/api/content/:key', wrap(async (req, res) =>
+  res.json(await db.setContent(req.params.key, req.body || {})),
+))
+
 // Sends a birthday email to every provided recipient that has an address.
 app.post('/api/notify-birthdays', async (req, res) => {
   const { recipients = [], month = '' } = req.body || {}
