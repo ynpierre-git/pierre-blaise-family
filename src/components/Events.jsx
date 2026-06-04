@@ -29,6 +29,17 @@ export default function Events({ authed = false, onLogin }) {
   const [pendingAction, setPendingAction] = useState(null)
   const [loginOpen, setLoginOpen] = useState(false)
 
+  // Lightbox: { media: [...], index } when a photo/video is opened full-size.
+  const [lightbox, setLightbox] = useState(null)
+  const openLightbox = (mediaArray, index) => setLightbox({ media: mediaArray, index })
+  const closeLightbox = () => setLightbox(null)
+  const stepLightbox = (delta) =>
+    setLightbox((lb) => {
+      if (!lb) return lb
+      const n = lb.media.length
+      return { ...lb, index: (lb.index + delta + n) % n }
+    })
+
   const requireAuth = (action) => {
     if (authed) return action()
     setPendingAction(() => action)
@@ -69,6 +80,21 @@ export default function Events({ authed = false, onLogin }) {
       document.body.style.overflow = ''
     }
   }, [isOpen])
+
+  useEffect(() => {
+    if (!lightbox) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeLightbox()
+      else if (e.key === 'ArrowRight') stepLightbox(1)
+      else if (e.key === 'ArrowLeft') stepLightbox(-1)
+    }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [lightbox])
 
   const update = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -256,13 +282,21 @@ export default function Events({ authed = false, onLogin }) {
 
                   {media.length > 0 && (
                     <div className="media-gallery">
-                      {media.map((m) => (
+                      {media.map((m, idx) => (
                         <figure key={m.id} className="media-item">
-                          {m.type === 'video' ? (
-                            <video src={m.url} controls preload="metadata" />
-                          ) : (
-                            <img src={m.url} alt={m.name} loading="lazy" />
-                          )}
+                          <button
+                            type="button"
+                            className="media-open"
+                            onClick={() => openLightbox(media, idx)}
+                            aria-label={`View ${m.name || (m.type === 'video' ? 'video' : 'photo')} larger`}
+                          >
+                            {m.type === 'video' ? (
+                              <video src={m.url} preload="metadata" muted playsInline />
+                            ) : (
+                              <img src={m.url} alt={m.name} loading="lazy" />
+                            )}
+                            <span className="media-zoom" aria-hidden="true">⤢</span>
+                          </button>
                           {authed && (
                             <button
                               type="button"
@@ -410,7 +444,68 @@ export default function Events({ authed = false, onLogin }) {
           }}
         />
       )}
+
+      {lightbox && (
+        <Lightbox
+          item={lightbox.media[lightbox.index]}
+          count={lightbox.media.length}
+          index={lightbox.index}
+          onPrev={() => stepLightbox(-1)}
+          onNext={() => stepLightbox(1)}
+          onClose={closeLightbox}
+        />
+      )}
     </section>
+  )
+}
+
+function Lightbox({ item, count, index, onPrev, onNext, onClose }) {
+  const multiple = count > 1
+  return (
+    <div
+      className="lightbox-overlay"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <button type="button" className="lightbox-close" aria-label="Close" onClick={onClose}>
+        ×
+      </button>
+
+      {multiple && (
+        <button
+          type="button"
+          className="lightbox-nav lightbox-prev"
+          aria-label="Previous"
+          onClick={onPrev}
+        >
+          ‹
+        </button>
+      )}
+
+      <figure className="lightbox-figure">
+        {item.type === 'video' ? (
+          <video src={item.url} controls autoPlay playsInline />
+        ) : (
+          <img src={item.url} alt={item.name || ''} />
+        )}
+        {(item.name || multiple) && (
+          <figcaption className="lightbox-caption">
+            {item.name}
+            {multiple && <span className="lightbox-counter">{index + 1} / {count}</span>}
+          </figcaption>
+        )}
+      </figure>
+
+      {multiple && (
+        <button
+          type="button"
+          className="lightbox-nav lightbox-next"
+          aria-label="Next"
+          onClick={onNext}
+        >
+          ›
+        </button>
+      )}
+    </div>
   )
 }
 
