@@ -529,5 +529,7 @@ function sizedImage(url, width, quality = 72) {
     '/storage/v1/object/public/',
     '/storage/v1/render/image/public/',
   )
-  return `${rendered}?width=${width}&quality=${quality}`
+  // resize=contain keeps the full image and correct aspect ratio (the default
+  // 'cover' mode leaves the original height, producing a distorted sliver).
+  return `${rendered}?width=${width}&quality=${quality}&resize=contain`
 }
