@@ -53,7 +53,7 @@ export default function App() {
             remarkable work gathering and preserving our family’s history. His
             dedication, patience, and vision have given us a priceless gift, one
             that strengthens our identity and keeps our legacy alive for
-            generations to come. ❤️🙏
+            generations to come. ❤️🙏🏿
           </p>
         </div>
       </header>
