@@ -97,6 +97,15 @@
   animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+/* The masthead sits directly over the photo background — a soft parchment
+   glow behind the text keeps it readable no matter what's behind it. */
+.masthead-inner > * {
+  text-shadow:
+    0 1px 1px rgba(243, 234, 216, 0.95),
+    0 0 14px rgba(243, 234, 216, 0.9),
+    0 0 28px rgba(243, 234, 216, 0.7);
+}
+
 .eyebrow {
   font-size: 0.74rem;
   letter-spacing: 0.42em;
@@ -1592,6 +1601,7 @@
   text-align: center;
   font-size: 0.85rem;
   color: var(--ink-soft);
+  text-shadow: 0 1px 1px rgba(243, 234, 216, 0.95), 0 0 12px rgba(243, 234, 216, 0.85);
   display: flex;
   justify-content: center;
   gap: 0.6rem;
