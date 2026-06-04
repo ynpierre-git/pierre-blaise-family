@@ -48,7 +48,9 @@ export default function App() {
           <p className="thanks">
             A heartfelt thank-you to <strong>Jean-Marie Pierre</strong> for his
             remarkable work gathering and preserving our family’s history. His
-            dedication made this reunion truly special.
+            dedication, patience, and vision have given us a priceless gift, one
+            that strengthens our identity and keeps our legacy alive for
+            generations to come.
           </p>
         </div>
       </header>
