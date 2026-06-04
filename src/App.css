@@ -134,16 +134,18 @@
 }
 
 .lede {
-  max-width: 34rem;
+  max-width: 38rem;
   margin: 1.5rem auto 0;
-  color: var(--ink-soft);
-  font-size: clamp(1rem, 2.2vw, 1.12rem);
+  color: var(--ink);
+  font-size: clamp(1.25rem, 3vw, 1.55rem);
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .roots {
-  margin: 0.9rem auto 0;
+  margin: 1rem auto 0;
   color: var(--forest);
-  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  font-size: clamp(1.12rem, 2.6vw, 1.35rem);
   font-style: italic;
 }
 
