@@ -1,6 +1,4 @@
 // Thin client for the backend REST API. In dev, Vite proxies /api → :3001.
-import { supabase } from './supabase.js'
-
 const API = import.meta.env.VITE_API_URL || ''
 
 async function request(method, path, body) {
@@ -41,20 +39,25 @@ export const eventMediaApi = {
 }
 
 // Uploads a file straight to Supabase Storage using a server-minted signed URL,
-// bypassing the serverless request-size limit. Returns { url, path } to store on
-// the event (the bytes live in Storage; only the URL is kept in the row).
+// bypassing the serverless request-size limit. The signed token (embedded in the
+// URL) authorizes the upload, so no Supabase key is needed in the browser.
+// Returns { url, path } to store on the event — only the URL lives in the row.
 export async function uploadEventMedia(file) {
-  if (!supabase) {
-    throw new Error(
-      'Media storage is not configured. Set VITE_SUPABASE_URL and ' +
-        'VITE_SUPABASE_ANON_KEY, then redeploy.',
-    )
+  const { signedUrl, publicUrl, path } = await eventMediaApi.getUploadUrl(file.name)
+  // Match Supabase Storage's signed-upload format: multipart with the file under
+  // an empty field name plus a cacheControl field.
+  const form = new FormData()
+  form.append('cacheControl', '3600')
+  form.append('', file, file.name)
+  const res = await fetch(signedUrl, {
+    method: 'PUT',
+    headers: { 'x-upsert': 'false' },
+    body: form,
+  })
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(`Upload failed (${res.status}). ${detail}`.trim())
   }
-  const { token, path, publicUrl } = await eventMediaApi.getUploadUrl(file.name)
-  const { error } = await supabase.storage
-    .from('event-media')
-    .uploadToSignedUrl(path, token, file, { contentType: file.type })
-  if (error) throw error
   return { url: publicUrl, path }
 }
 
