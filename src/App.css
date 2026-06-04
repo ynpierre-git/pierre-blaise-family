@@ -155,6 +155,23 @@
   color: var(--forest-deep);
 }
 
+.thanks {
+  max-width: 40rem;
+  margin: 1.5rem auto 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--leaf, rgba(0, 0, 0, 0.12));
+  color: var(--ink);
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.thanks strong {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--forest-deep);
+}
+
 /* ===== Tabs ===== */
 .tabs {
   display: flex;

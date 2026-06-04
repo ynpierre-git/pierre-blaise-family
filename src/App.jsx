@@ -45,6 +45,11 @@ export default function App() {
           <p className="roots">
             Our family has its roots in <strong>Arcahaie, Haïti</strong> 🇭🇹
           </p>
+          <p className="thanks">
+            A heartfelt thank-you to <strong>Jean-Marie Pierre</strong> for his
+            remarkable work gathering and preserving our family’s history. His
+            dedication made this reunion truly special.
+          </p>
         </div>
       </header>
 

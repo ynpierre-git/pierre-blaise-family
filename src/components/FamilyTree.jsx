@@ -48,12 +48,6 @@ export default function FamilyTree() {
   return (
     <section className="section">
       <div className="section-head section-head-row">
-        <div>
-          <h2 className="section-title">The Family Tree</h2>
-          <p className="section-sub">
-            Built automatically from the records and their father / mother / spouse links.
-          </p>
-        </div>
         <div className="ftree-controls">
           <button type="button" className="btn-ghost" onClick={load}>
             ↻ Refresh
