@@ -73,14 +73,12 @@ export default function JeanMariePierre({ authed = false, onLogin }) {
 
   return (
     <section className="section jmp">
-      <div className="section-head section-head-row">
-        <div>
-          <h2 className="section-title">Jean-Marie Pierre</h2>
-          <p className="section-sub">Keeper of our family's history</p>
-        </div>
-        <button type="button" className="btn-ghost" onClick={startEdit}>
+      <div className="section-head jmp-head">
+        <button type="button" className="btn-ghost jmp-edit-btn" onClick={startEdit}>
           {authed ? '✎ Edit' : '🔒 Edit'}
         </button>
+        <h2 className="section-title jmp-title">Jean-Marie Pierre</h2>
+        <p className="section-sub jmp-sub">Keeper of our family's history</p>
       </div>
 
       <div className="jmp-hero card">

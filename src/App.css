@@ -1921,6 +1921,37 @@
   color: var(--ink-soft);
 }
 
+.jmp-head {
+  position: relative;
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.jmp-title {
+  font-size: clamp(2.1rem, 5.5vw, 3rem);
+  line-height: 1.1;
+}
+
+.jmp-sub {
+  margin-top: 0.5rem;
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  color: var(--forest);
+  font-style: italic;
+}
+
+.jmp-edit-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+@media (max-width: 600px) {
+  .jmp-edit-btn {
+    position: static;
+    margin-bottom: 0.9rem;
+  }
+}
+
 .jmp-edit-photo {
   display: flex;
   align-items: center;
