@@ -1937,6 +1937,7 @@
   font-size: clamp(1.05rem, 2.6vw, 1.3rem);
   color: var(--forest);
   font-style: italic;
+  font-weight: 700;
 }
 
 .jmp-edit-btn {
