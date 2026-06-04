@@ -108,6 +108,7 @@ export const db = {
   // needed. Returns the saved data object (without the marker), or null.
   getContent: (key) => getContentRow(key),
   setContent: (key, value) => upsertContentRow(key, value),
+  removeContent: (key) => removeContentRow(key),
 }
 
 // Marks an events-table row as singleton content rather than a real event.
@@ -182,4 +183,12 @@ async function upsertContentRow(key, value) {
   const { data, error } = await query.select('data').single()
   if (error) throw error
   return unwrapContent(data)
+}
+
+async function removeContentRow(key) {
+  const existing = await findContentRow(key)
+  if (!existing) return false
+  const { error } = await supabase.from('events').delete().eq('id', existing.id)
+  if (error) throw error
+  return true
 }

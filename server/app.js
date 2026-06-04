@@ -86,6 +86,10 @@ app.get('/api/content/:key', wrap(async (req, res) =>
 app.put('/api/content/:key', wrap(async (req, res) =>
   res.json(await db.setContent(req.params.key, req.body || {})),
 ))
+app.delete('/api/content/:key', wrap(async (req, res) => {
+  const ok = await db.removeContent(req.params.key)
+  return ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' })
+}))
 
 // Sends a birthday email to every provided recipient that has an address.
 app.post('/api/notify-birthdays', async (req, res) => {
