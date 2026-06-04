@@ -43,7 +43,7 @@ body {
     radial-gradient(ellipse 90% 60% at 50% -10%, rgba(189, 115, 51, 0.10), transparent 60%),
     radial-gradient(ellipse 70% 50% at 100% 100%, rgba(47, 74, 60, 0.10), transparent 55%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
-    linear-gradient(rgba(243, 234, 216, 0.52), rgba(243, 234, 216, 0.64)),
+    linear-gradient(rgba(243, 234, 216, 0.62), rgba(243, 234, 216, 0.73)),
     url("/family-bg.jpg");
   background-size: auto, auto, 180px 180px, cover, contain;
   background-position: center, center, center, center top;
