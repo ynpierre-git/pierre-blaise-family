@@ -166,14 +166,14 @@
   box-shadow: var(--shadow-soft);
   color: var(--ink);
   font-size: clamp(1.18rem, 2.6vw, 1.4rem);
-  font-weight: 600;
+  font-weight: normal;
   font-style: italic;
   line-height: 1.6;
 }
 
 .thanks strong {
   font-style: normal;
-  font-weight: 700;
+  font-weight: normal;
   color: var(--ochre);
 }
 
