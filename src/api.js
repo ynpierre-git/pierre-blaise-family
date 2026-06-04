@@ -1,4 +1,6 @@
 // Thin client for the backend REST API. In dev, Vite proxies /api → :3001.
+import { supabase } from './supabase.js'
+
 const API = import.meta.env.VITE_API_URL || ''
 
 async function request(method, path, body) {
@@ -31,6 +33,29 @@ export const eventsApi = {
 export const contentApi = {
   get: (key) => request('GET', `/api/content/${key}`),
   save: (key, value) => request('PUT', `/api/content/${key}`, value),
+}
+
+export const eventMediaApi = {
+  getUploadUrl: (name) => request('POST', '/api/event-media/upload-url', { name }),
+  deleteObject: (path) => request('POST', '/api/event-media/delete', { path }),
+}
+
+// Uploads a file straight to Supabase Storage using a server-minted signed URL,
+// bypassing the serverless request-size limit. Returns { url, path } to store on
+// the event (the bytes live in Storage; only the URL is kept in the row).
+export async function uploadEventMedia(file) {
+  if (!supabase) {
+    throw new Error(
+      'Media storage is not configured. Set VITE_SUPABASE_URL and ' +
+        'VITE_SUPABASE_ANON_KEY, then redeploy.',
+    )
+  }
+  const { token, path, publicUrl } = await eventMediaApi.getUploadUrl(file.name)
+  const { error } = await supabase.storage
+    .from('event-media')
+    .uploadToSignedUrl(path, token, file, { contentType: file.type })
+  if (error) throw error
+  return { url: publicUrl, path }
 }
 
 // Reads a File into a base64 data URL so it can be stored in the database.

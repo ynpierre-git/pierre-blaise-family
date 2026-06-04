@@ -68,6 +68,17 @@ app.delete('/api/events/:id', wrap(async (req, res) => {
   return ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Event not found' })
 }))
 
+// ── Event media: direct-to-Storage uploads ──
+// The browser asks for a signed URL, uploads the file straight to Supabase
+// Storage (no serverless size cap), then saves the returned URL on the event.
+app.post('/api/event-media/upload-url', wrap(async (req, res) =>
+  res.json(await db.createMediaUploadUrl((req.body || {}).name)),
+))
+app.post('/api/event-media/delete', wrap(async (req, res) => {
+  await db.removeMediaObject((req.body || {}).path)
+  res.json({ ok: true })
+}))
+
 // ── Singleton content (Jean-Marie Pierre tribute, etc.) ──
 app.get('/api/content/:key', wrap(async (req, res) =>
   res.json(await db.getContent(req.params.key)),

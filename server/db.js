@@ -93,12 +93,56 @@ export const db = {
   updateEvent: (id, patch) => patchIn('events', id, patch),
   removeEvent: (id) => removeFrom('events', id),
 
+  // ── Event media files (Supabase Storage) ──
+  // The browser uploads files straight to Storage via a signed URL, so large
+  // photos/videos skip the serverless request-size limit. Only the resulting
+  // public URL + path is stored on the event row.
+  createMediaUploadUrl: (name) => createMediaUploadUrl(name),
+  removeMediaObject: (path) => removeMediaObject(path),
+
   // ── Singleton content (e.g. the Jean-Marie Pierre tribute) ──
   // Returns the stored data object, or null if nothing saved. If the `content`
   // table hasn't been created yet (migration not run), also returns null so the
   // page falls back to its default copy instead of erroring.
   getContent: (key) => getContentRow(key),
   setContent: (key, value) => upsertContentRow(key, value),
+}
+
+// ── Storage: event media ──
+const MEDIA_BUCKET = 'event-media'
+let bucketReady = false
+
+// Create the public bucket once (idempotent) so there is no manual setup step.
+async function ensureBucket() {
+  if (bucketReady) return
+  const { error } = await supabase.storage.createBucket(MEDIA_BUCKET, {
+    public: true,
+    fileSizeLimit: '200MB',
+  })
+  // "already exists" is fine; anything else is a real error.
+  if (error && !/already exists/i.test(error.message || '')) throw error
+  bucketReady = true
+}
+
+// Mint a one-time signed upload URL for a unique path, plus the public URL the
+// file will have once uploaded.
+async function createMediaUploadUrl(name) {
+  await ensureBucket()
+  const safe = String(name || 'file').replace(/[^a-zA-Z0-9._-]/g, '_').slice(-80)
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safe}`
+  const { data, error } = await supabase.storage
+    .from(MEDIA_BUCKET)
+    .createSignedUploadUrl(path)
+  if (error) throw error
+  const { data: pub } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path)
+  return { signedUrl: data.signedUrl, token: data.token, path, publicUrl: pub.publicUrl }
+}
+
+async function removeMediaObject(path) {
+  if (!path) return false
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([path])
+  if (error) throw error
+  return true
 }
 
 async function getContentRow(key) {

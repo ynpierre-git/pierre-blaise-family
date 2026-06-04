@@ -12,8 +12,8 @@ const STATIC_PHOTO = '/jean-marie-pierre.jpg'
 const DEFAULTS = {
   lead:
     "With dedication, patience, and vision, Jean-Marie Pierre gathered and " +
-    "preserved the story of our family — giving us a priceless gift that " +
-    "strengthens our identity and keeps our legacy alive for generations to come.",
+    "preserved the story of our family. His work is a priceless gift that " +
+    "strengthens who we are and keeps our legacy alive for generations to come.",
   upbringing:
     "Rooted in Arcahaie, Haïti 🇭🇹, Jean-Marie grew up surrounded by the values " +
     "that still shape our family today — faith, hard work, and a deep love of kin.",

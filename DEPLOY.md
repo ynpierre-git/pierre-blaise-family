@@ -43,9 +43,17 @@ git push -u origin main
    | Name                        | Value                                   |
    |-----------------------------|-----------------------------------------|
    | `SUPABASE_URL`              | `https://nxyeqjyxwzaveltsyszx.supabase.co` |
-   | `SUPABASE_SERVICE_ROLE_KEY` | your `sb_secret_…` key                  |
+   | `SUPABASE_SERVICE_ROLE_KEY` | your `sb_secret_…` key (server-side only) |
+   | `VITE_SUPABASE_URL`         | same as `SUPABASE_URL` (browser-safe)   |
+   | `VITE_SUPABASE_ANON_KEY`    | your `sb_publishable_…` / anon key (browser-safe) |
    | `RESEND_API_KEY`            | (optional — leave unset for simulated email) |
    | `FROM_EMAIL`                | (optional) `Pierre-Blaise Family <onboarding@resend.dev>` |
+
+   The two `VITE_` Supabase vars are **build-time** values baked into the frontend
+   so it can upload event photos/videos straight to Supabase Storage (bypassing
+   the serverless request-size limit). They are browser-safe (the anon/publishable
+   key is meant to be public; Storage access is gated by signed upload URLs).
+   Without them, event-media uploads show a "storage not configured" message.
 
    Do **not** set `VITE_API_URL` — leaving it empty makes the frontend call the
    same-domain `/api`. Do **not** add the service-role key as a `VITE_` var.

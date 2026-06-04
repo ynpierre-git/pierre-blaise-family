@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { eventsApi, fileToDataUrl } from '../api.js'
+import { eventsApi, uploadEventMedia, eventMediaApi } from '../api.js'
 import LoginModal from './LoginModal.jsx'
 
 const EMPTY = {
@@ -10,7 +10,7 @@ const EMPTY = {
   description: '',
 }
 
-const MAX_MEDIA_BYTES = 8 * 1024 * 1024 // 8 MB per file to keep the DB sane
+const MAX_MEDIA_BYTES = 100 * 1024 * 1024 // 100 MB per file (uploaded to Storage)
 
 export default function Events({ authed = false, onLogin }) {
   const [eventList, setEventList] = useState(null) // null = loading
@@ -137,22 +137,28 @@ export default function Events({ authed = false, onLogin }) {
     const files = Array.from(e.target.files || [])
     e.target.value = ''
     if (!files.length) return
-    setMediaNote('')
+    setMediaNote('Uploading…')
 
     const accepted = []
     const skipped = []
+    let uploadError = ''
     for (const file of files) {
       if (file.size > MAX_MEDIA_BYTES) {
         skipped.push(file.name)
         continue
       }
-      const url = await fileToDataUrl(file)
-      accepted.push({
-        id: `${Date.now()}-${file.name}`,
-        type: file.type.startsWith('video') ? 'video' : 'image',
-        url,
-        name: file.name,
-      })
+      try {
+        const { url, path } = await uploadEventMedia(file)
+        accepted.push({
+          id: `${Date.now()}-${file.name}`,
+          type: file.type.startsWith('video') ? 'video' : 'image',
+          url,
+          path,
+          name: file.name,
+        })
+      } catch (err) {
+        uploadError = err.message || 'Upload failed.'
+      }
     }
 
     if (accepted.length) {
@@ -162,20 +168,26 @@ export default function Events({ authed = false, onLogin }) {
         const updated = await eventsApi.update(eventId, { media })
         setEventList((list) => list.map((x) => (x.id === eventId ? updated : x)))
       } catch {
-        setMediaNote('Could not save media to the server.')
+        setMediaNote('Uploaded, but could not save to the event.')
+        return
       }
     }
-    if (skipped.length) {
-      setMediaNote(`Skipped (over 8 MB): ${skipped.join(', ')}`)
-    }
+
+    const notes = []
+    if (uploadError) notes.push(uploadError)
+    if (skipped.length) notes.push(`Skipped (over 100 MB): ${skipped.join(', ')}`)
+    setMediaNote(notes.join(' '))
   }
 
   const removeMedia = async (eventId, mediaId) => {
     const ev = eventList.find((x) => x.id === eventId)
+    const item = (ev.media || []).find((m) => m.id === mediaId)
     const media = (ev.media || []).filter((m) => m.id !== mediaId)
     try {
       const updated = await eventsApi.update(eventId, { media })
       setEventList((list) => list.map((x) => (x.id === eventId ? updated : x)))
+      // Best-effort cleanup of the stored file (older inline items have no path).
+      if (item?.path) eventMediaApi.deleteObject(item.path).catch(() => {})
     } catch {
       setMediaNote('Could not update media on the server.')
     }
