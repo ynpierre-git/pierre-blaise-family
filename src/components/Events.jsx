@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { eventsApi, fileToDataUrl } from '../api.js'
+import { verify } from '../auth.js'
 
 const EMPTY = {
   title: '',
@@ -11,7 +12,7 @@ const EMPTY = {
 
 const MAX_MEDIA_BYTES = 8 * 1024 * 1024 // 8 MB per file to keep the DB sane
 
-export default function Events() {
+export default function Events({ authed = false, onLogin }) {
   const [eventList, setEventList] = useState(null) // null = loading
   const [loadError, setLoadError] = useState('')
   const [form, setForm] = useState(EMPTY)
@@ -20,6 +21,27 @@ export default function Events() {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
   const [mediaNote, setMediaNote] = useState('')
+
+  // Viewing is open to everyone; adding/editing requires the admin login. When a
+  // logged-out visitor triggers an admin action we stash it and run it after a
+  // successful sign-in.
+  const [pendingAction, setPendingAction] = useState(null)
+  const [loginOpen, setLoginOpen] = useState(false)
+
+  const requireAuth = (action) => {
+    if (authed) return action()
+    setPendingAction(() => action)
+    setLoginOpen(true)
+  }
+
+  const onLoginSuccess = () => {
+    setLoginOpen(false)
+    onLogin?.()
+    if (pendingAction) {
+      pendingAction()
+      setPendingAction(null)
+    }
+  }
 
   useEffect(() => {
     let live = true
@@ -169,8 +191,12 @@ export default function Events() {
           <h2 className="section-title">Family Events</h2>
           <p className="section-sub">Gatherings, milestones, and moments to remember.</p>
         </div>
-        <button type="button" className="btn-primary btn-add" onClick={openAdd}>
-          ＋ Add Event
+        <button
+          type="button"
+          className="btn-primary btn-add"
+          onClick={() => requireAuth(openAdd)}
+        >
+          {authed ? '＋ Add Event' : '🔒 Add Event'}
         </button>
       </div>
 
@@ -202,10 +228,10 @@ export default function Events() {
                     <button
                       type="button"
                       className="event-edit"
-                      onClick={() => openEdit(ev)}
+                      onClick={() => requireAuth(() => openEdit(ev))}
                       aria-label={`Edit ${ev.title}`}
                     >
-                      ✎ Edit
+                      {authed ? '✎ Edit' : '🔒 Edit'}
                     </button>
                   </div>
                   <p className="event-desc">{ev.description}</p>
@@ -223,14 +249,16 @@ export default function Events() {
                           ) : (
                             <img src={m.url} alt={m.name} loading="lazy" />
                           )}
-                          <button
-                            type="button"
-                            className="media-remove"
-                            aria-label={`Remove ${m.name}`}
-                            onClick={() => removeMedia(ev.id, m.id)}
-                          >
-                            ×
-                          </button>
+                          {authed && (
+                            <button
+                              type="button"
+                              className="media-remove"
+                              aria-label={`Remove ${m.name}`}
+                              onClick={() => removeMedia(ev.id, m.id)}
+                            >
+                              ×
+                            </button>
+                          )}
                           {m.type === 'video' && (
                             <span className="media-badge">▶ Video</span>
                           )}
@@ -239,16 +267,28 @@ export default function Events() {
                     </div>
                   )}
 
-                  <label className="media-add">
-                    <input
-                      type="file"
-                      accept="image/*,video/*"
-                      multiple
-                      onChange={addMedia(ev.id)}
-                      hidden
-                    />
-                    <span>＋ Add photos / videos</span>
-                  </label>
+                  {authed ? (
+                    <label className="media-add">
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        multiple
+                        onChange={addMedia(ev.id)}
+                        hidden
+                      />
+                      <span>＋ Add photos / videos</span>
+                    </label>
+                  ) : (
+                    media.length === 0 && (
+                      <button
+                        type="button"
+                        className="media-add"
+                        onClick={() => requireAuth(() => {})}
+                      >
+                        <span>🔒 Sign in to add photos / videos</span>
+                      </button>
+                    )
+                  )}
                 </div>
               </li>
             )
@@ -345,7 +385,75 @@ export default function Events() {
           </div>
         </div>
       )}
+
+      {loginOpen && (
+        <LoginModal
+          onSuccess={onLoginSuccess}
+          onCancel={() => {
+            setLoginOpen(false)
+            setPendingAction(null)
+          }}
+        />
+      )}
     </section>
+  )
+}
+
+function LoginModal({ onSuccess, onCancel }) {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+
+  const submit = (e) => {
+    e.preventDefault()
+    if (verify(username.trim(), password)) onSuccess()
+    else setError('Incorrect username or password.')
+  }
+
+  return (
+    <div
+      className="modal-overlay"
+      onMouseDown={(e) => e.target === e.currentTarget && onCancel()}
+    >
+      <div className="modal" role="dialog" aria-modal="true" aria-label="Sign in">
+        <div className="modal-head">
+          <h3 className="form-title">🔒 Sign in to manage events</h3>
+          <button type="button" className="modal-close" aria-label="Close" onClick={onCancel}>
+            ×
+          </button>
+        </div>
+        <form className="modal-body" onSubmit={submit}>
+          <label className="field">
+            <span>Username</span>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              autoFocus
+            />
+          </label>
+          <label className="field">
+            <span>Password</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+          </label>
+          {error && <p className="login-error">{error}</p>}
+          <div className="modal-actions">
+            <span className="modal-actions-spacer" />
+            <button type="button" className="btn-ghost" onClick={onCancel}>
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary">
+              Sign In
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   )
 }
 

@@ -67,9 +67,7 @@ export default function App() {
             onClick={() => setActive(tab.id)}
           >
             <span className="tab-hint">
-              {(tab.id === 'demographics' || tab.id === 'events') && !authed
-                ? `🔒 ${tab.hint}`
-                : tab.hint}
+              {tab.id === 'demographics' && !authed ? `🔒 ${tab.hint}` : tab.hint}
             </span>
             <span className="tab-label">{tab.label}</span>
           </button>
@@ -81,8 +79,7 @@ export default function App() {
           (authed ? <Demographics onLogout={logout} /> : <Login onLogin={login} />)}
         {active === 'tree' && <FamilyTree />}
         {active === 'jmpierre' && <JeanMariePierre />}
-        {active === 'events' &&
-          (authed ? <Events /> : <Login onLogin={login} />)}
+        {active === 'events' && <Events authed={authed} onLogin={login} />}
         {active === 'birthdays' && <Birthdays />}
       </main>
 
