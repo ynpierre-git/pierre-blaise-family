@@ -293,7 +293,11 @@ export default function Events({ authed = false, onLogin }) {
                             {m.type === 'video' ? (
                               <video src={m.url} preload="metadata" muted playsInline />
                             ) : (
-                              <img src={m.url} alt={m.name} loading="lazy" />
+                              <img
+                                src={sizedImage(m.url, 500)}
+                                alt={m.name}
+                                loading="lazy"
+                              />
                             )}
                             <span className="media-zoom" aria-hidden="true">⤢</span>
                           </button>
@@ -485,7 +489,7 @@ function Lightbox({ item, count, index, onPrev, onNext, onClose }) {
         {item.type === 'video' ? (
           <video src={item.url} controls autoPlay playsInline />
         ) : (
-          <img src={item.url} alt={item.name || ''} />
+          <img src={sizedImage(item.url, 1600, 80)} alt={item.name || ''} />
         )}
         {(item.name || multiple) && (
           <figcaption className="lightbox-caption">
@@ -513,4 +517,17 @@ function parseDate(iso) {
   const [year, month, day] = iso.split('-')
   const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
   return { month: months[Number(month) - 1], day: Number(day), year }
+}
+
+// Photos are stored at full resolution (often many MB). Supabase Storage can
+// resize on the fly via its image-render endpoint, so we request a small version
+// for thumbnails and a medium one for the lightbox instead of the originals.
+// Only applies to public Storage image URLs; base64/other URLs pass through.
+function sizedImage(url, width, quality = 72) {
+  if (!url || !url.includes('/storage/v1/object/public/')) return url
+  const rendered = url.replace(
+    '/storage/v1/object/public/',
+    '/storage/v1/render/image/public/',
+  )
+  return `${rendered}?width=${width}&quality=${quality}`
 }
