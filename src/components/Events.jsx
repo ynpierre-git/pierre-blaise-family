@@ -10,7 +10,8 @@ const EMPTY = {
   description: '',
 }
 
-const MAX_MEDIA_BYTES = 100 * 1024 * 1024 // 100 MB per file (uploaded to Storage)
+const MAX_MEDIA_MB = 500
+const MAX_MEDIA_BYTES = MAX_MEDIA_MB * 1024 * 1024 // per-file cap (uploaded to Storage)
 
 export default function Events({ authed = false, onLogin }) {
   const [eventList, setEventList] = useState(null) // null = loading
@@ -175,7 +176,8 @@ export default function Events({ authed = false, onLogin }) {
 
     const notes = []
     if (uploadError) notes.push(uploadError)
-    if (skipped.length) notes.push(`Skipped (over 100 MB): ${skipped.join(', ')}`)
+    if (skipped.length)
+      notes.push(`Skipped (over ${MAX_MEDIA_MB} MB): ${skipped.join(', ')}`)
     setMediaNote(notes.join(' '))
   }
 

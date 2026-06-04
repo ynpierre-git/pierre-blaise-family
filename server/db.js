@@ -84,7 +84,10 @@ export const db = {
   removeMember: (id) => removeFrom('members', id),
 
   // ── Events ── (oldest first, matching the old push behavior)
-  listEvents: () => listFrom('events', true),
+  // Singleton content rows live in this same table marked with `_contentKey`;
+  // filter them out so they never appear as events.
+  listEvents: async () =>
+    (await listFrom('events', true)).filter((e) => !e[CONTENT_MARKER]),
   addEvent: (e) => {
     const payload = toData(e)
     if (!Array.isArray(payload.media)) payload.media = []
@@ -101,12 +104,14 @@ export const db = {
   removeMediaObject: (path) => removeMediaObject(path),
 
   // ── Singleton content (e.g. the Jean-Marie Pierre tribute) ──
-  // Returns the stored data object, or null if nothing saved. If the `content`
-  // table hasn't been created yet (migration not run), also returns null so the
-  // page falls back to its default copy instead of erroring.
+  // Stored as a marked row in the `events` table so no extra table/migration is
+  // needed. Returns the saved data object (without the marker), or null.
   getContent: (key) => getContentRow(key),
   setContent: (key, value) => upsertContentRow(key, value),
 }
+
+// Marks an events-table row as singleton content rather than a real event.
+const CONTENT_MARKER = '_contentKey'
 
 // ── Storage: event media ──
 const MEDIA_BUCKET = 'event-media'
@@ -147,38 +152,34 @@ async function removeMediaObject(path) {
   return true
 }
 
-async function getContentRow(key) {
+// Strip the marker before returning content to callers.
+const unwrapContent = (row) => {
+  if (!row?.data) return null
+  const { [CONTENT_MARKER]: _omit, ...rest } = row.data
+  return rest
+}
+
+async function findContentRow(key) {
   const { data, error } = await supabase
-    .from('content')
-    .select('data')
-    .eq('key', key)
+    .from('events')
+    .select('id, data')
+    .eq(`data->>${CONTENT_MARKER}`, key)
     .maybeSingle()
-  if (error) {
-    if (isMissingTable(error)) return null
-    throw error
-  }
-  return data ? data.data : null
+  if (error) throw error
+  return data || null
+}
+
+async function getContentRow(key) {
+  return unwrapContent(await findContentRow(key))
 }
 
 async function upsertContentRow(key, value) {
-  const { data, error } = await supabase
-    .from('content')
-    .upsert({ key, data: value, updated_at: new Date().toISOString() })
-    .select('data')
-    .single()
+  const payload = { ...value, [CONTENT_MARKER]: key }
+  const existing = await findContentRow(key)
+  const query = existing
+    ? supabase.from('events').update({ data: payload }).eq('id', existing.id)
+    : supabase.from('events').insert({ data: payload })
+  const { data, error } = await query.select('data').single()
   if (error) throw error
-  return data.data
-}
-
-// True when the `content` table hasn't been created yet (migration not run).
-// Postgres reports 42P01 ("undefined_table"); PostgREST reports PGRST205
-// ("Could not find the table ... in the schema cache").
-function isMissingTable(error) {
-  const msg = error.message || ''
-  return (
-    error.code === '42P01' ||
-    error.code === 'PGRST205' ||
-    /relation .*content.* does not exist/i.test(msg) ||
-    /could not find the table/i.test(msg)
-  )
+  return unwrapContent(data)
 }
