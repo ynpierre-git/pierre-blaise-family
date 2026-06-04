@@ -124,11 +124,15 @@ async function upsertContentRow(key, value) {
   return data.data
 }
 
-// Postgres "undefined_table" (42P01), surfaced by PostgREST when the migration
-// in supabase-schema.sql hasn't been run yet.
+// True when the `content` table hasn't been created yet (migration not run).
+// Postgres reports 42P01 ("undefined_table"); PostgREST reports PGRST205
+// ("Could not find the table ... in the schema cache").
 function isMissingTable(error) {
+  const msg = error.message || ''
   return (
     error.code === '42P01' ||
-    /relation .*content.* does not exist/i.test(error.message || '')
+    error.code === 'PGRST205' ||
+    /relation .*content.* does not exist/i.test(msg) ||
+    /could not find the table/i.test(msg)
   )
 }
