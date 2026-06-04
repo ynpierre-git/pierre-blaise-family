@@ -101,6 +101,9 @@ export default function FamilyTree() {
               ))}
             </div>
           </div>
+          <p className="ftree-count">
+            {members.length} family {members.length === 1 ? 'member' : 'members'}
+          </p>
         </>
       )}
     </section>

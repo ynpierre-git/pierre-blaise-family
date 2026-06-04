@@ -1223,6 +1223,13 @@
   gap: 0.4rem;
 }
 
+.ftree-count {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
 .ftree-dot {
   width: 11px;
   height: 11px;
