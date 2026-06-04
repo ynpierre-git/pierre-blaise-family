@@ -156,20 +156,25 @@
 }
 
 .thanks {
-  max-width: 40rem;
-  margin: 1.5rem auto 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--leaf, rgba(0, 0, 0, 0.12));
+  max-width: 44rem;
+  margin: 1.75rem auto 0;
+  padding: 1.5rem 1.75rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--ochre);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
   color: var(--ink);
-  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  font-size: clamp(1.18rem, 2.6vw, 1.4rem);
+  font-weight: 600;
   font-style: italic;
   line-height: 1.6;
 }
 
 .thanks strong {
   font-style: normal;
-  font-weight: 600;
-  color: var(--forest-deep);
+  font-weight: 700;
+  color: var(--ochre);
 }
 
 /* ===== Tabs ===== */
