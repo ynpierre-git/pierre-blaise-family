@@ -38,6 +38,15 @@ export const eventMediaApi = {
   deleteObject: (path) => request('POST', '/api/event-media/delete', { path }),
 }
 
+export const broadcastApi = {
+  send: (event, message, channels) =>
+    request('POST', '/api/broadcast-event', { event, message, channels }),
+}
+
+export const healthApi = {
+  get: () => request('GET', '/api/health'),
+}
+
 // Uploads a file straight to Supabase Storage using a server-minted signed URL,
 // bypassing the serverless request-size limit. The signed token (embedded in the
 // URL) authorizes the upload, so no Supabase key is needed in the browser.

@@ -46,6 +46,14 @@ git push -u origin main
    | `SUPABASE_SERVICE_ROLE_KEY` | your `sb_secret_…` key (server-side only) |
    | `RESEND_API_KEY`            | (optional — leave unset for simulated email) |
    | `FROM_EMAIL`                | (optional) `Pierre-Blaise Family <onboarding@resend.dev>` |
+   | `TWILIO_ACCOUNT_SID`        | (optional — for event SMS broadcasts) your `AC…` SID |
+   | `TWILIO_AUTH_TOKEN`         | (optional — for event SMS broadcasts) auth token |
+   | `TWILIO_FROM_NUMBER`        | (optional) your Twilio sender number, e.g. `+15551234567` |
+
+   The three `TWILIO_*` vars enable real **text-message** broadcasts from the
+   Events page. Without all three set, SMS runs in **simulated mode** (the UI says
+   so and nothing is actually sent). Members also need a phone number saved in the
+   Demographics form to receive a text.
 
    Event photos/videos upload straight to Supabase Storage (bucket `event-media`,
    auto-created on first use) via a **server-minted signed URL** — the signed token

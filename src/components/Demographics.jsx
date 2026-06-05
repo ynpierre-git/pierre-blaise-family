@@ -13,6 +13,7 @@ const EMPTY = {
   city: '',
   country: '',
   email: '',
+  phone: '',
   photo: '',
   maritalStatus: '',
   spouseId: '',
@@ -397,6 +398,19 @@ export default function Demographics({ onLogout }) {
                     placeholder="name@example.com"
                   />
                 </label>
+              </div>
+
+              <div className="field-row">
+                <label className="field">
+                  <span>Phone (for text alerts)</span>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={update('phone')}
+                    placeholder="+1 555 123 4567"
+                  />
+                </label>
+                <span className="field" aria-hidden="true" />
               </div>
 
               <div className="field-row">

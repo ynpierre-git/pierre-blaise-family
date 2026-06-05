@@ -608,6 +608,72 @@
   border-color: var(--forest);
 }
 
+.event-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.event-broadcast {
+  border-color: var(--ochre);
+  color: var(--ochre);
+}
+
+.event-broadcast:hover {
+  background: var(--ochre);
+  border-color: var(--ochre);
+  color: #fff;
+}
+
+/* ===== Broadcast modal ===== */
+.bcast-channels {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.bcast-channel {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.bcast-channel em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.bcast-channel em.is-live {
+  color: var(--forest);
+}
+
+.bcast-channel em.is-sim {
+  color: #8a5a16;
+}
+
+.bcast-preview {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: 0.25rem 0 0.5rem;
+}
+
+.bcast-done {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--forest);
+  margin-bottom: 0.5rem;
+}
+
 .event-desc {
   color: var(--ink-soft);
   margin: 0.3rem 0 0.75rem;

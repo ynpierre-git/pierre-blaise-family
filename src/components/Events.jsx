@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react'
-import { eventsApi, uploadEventMedia, eventMediaApi } from '../api.js'
+import {
+  eventsApi,
+  uploadEventMedia,
+  eventMediaApi,
+  broadcastApi,
+  healthApi,
+  membersApi,
+} from '../api.js'
 import LoginModal from './LoginModal.jsx'
+
+const TODAY = new Date().toISOString().slice(0, 10)
 
 const EMPTY = {
   title: '',
@@ -28,6 +37,9 @@ export default function Events({ authed = false, onLogin }) {
   // successful sign-in.
   const [pendingAction, setPendingAction] = useState(null)
   const [loginOpen, setLoginOpen] = useState(false)
+
+  // Broadcast: the event being announced (null = modal closed).
+  const [broadcastEv, setBroadcastEv] = useState(null)
 
   // Lightbox: { media: [...], index } when a photo/video is opened full-size.
   const [lightbox, setLightbox] = useState(null)
@@ -265,14 +277,26 @@ export default function Events({ authed = false, onLogin }) {
                 <div className="event-body">
                   <div className="event-head">
                     <h3 className="event-title">{ev.title}</h3>
-                    <button
-                      type="button"
-                      className="event-edit"
-                      onClick={() => requireAuth(() => openEdit(ev))}
-                      aria-label={`Edit ${ev.title}`}
-                    >
-                      {authed ? '✎ Edit' : '🔒 Edit'}
-                    </button>
+                    <div className="event-actions">
+                      {ev.date >= TODAY && (
+                        <button
+                          type="button"
+                          className="event-edit event-broadcast"
+                          onClick={() => requireAuth(() => setBroadcastEv(ev))}
+                          aria-label={`Broadcast ${ev.title}`}
+                        >
+                          📣 Broadcast
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="event-edit"
+                        onClick={() => requireAuth(() => openEdit(ev))}
+                        aria-label={`Edit ${ev.title}`}
+                      >
+                        {authed ? '✎ Edit' : '🔒 Edit'}
+                      </button>
+                    </div>
                   </div>
                   <p className="event-desc">{ev.description}</p>
                   <div className="event-meta">
@@ -459,7 +483,186 @@ export default function Events({ authed = false, onLogin }) {
           onClose={closeLightbox}
         />
       )}
+
+      {broadcastEv && (
+        <BroadcastModal event={broadcastEv} onClose={() => setBroadcastEv(null)} />
+      )}
     </section>
+  )
+}
+
+function BroadcastModal({ event, onClose }) {
+  const [message, setMessage] = useState('')
+  const [channels, setChannels] = useState({ email: true, sms: false })
+  const [health, setHealth] = useState(null)
+  const [counts, setCounts] = useState(null) // { email, phone }
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
+  const [result, setResult] = useState(null)
+
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose()
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    Promise.all([
+      healthApi.get().catch(() => ({})),
+      membersApi.list().catch(() => []),
+    ]).then(([h, members]) => {
+      setHealth(h)
+      setCounts({
+        email: members.filter((m) => m.email).length,
+        phone: members.filter((m) => m.phone).length,
+      })
+    })
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [])
+
+  const toggle = (key) => setChannels((c) => ({ ...c, [key]: !c[key] }))
+
+  const send = async () => {
+    if (sending || (!channels.email && !channels.sms)) return
+    setSending(true)
+    setError('')
+    try {
+      const res = await broadcastApi.send(
+        {
+          title: event.title,
+          date: event.date,
+          location: event.location || '',
+          host: event.host || '',
+        },
+        message,
+        channels,
+      )
+      setResult(res)
+    } catch (err) {
+      setError(err.message || 'Could not send the broadcast.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const emailLive = health?.emailConfigured
+  const smsLive = health?.smsConfigured
+
+  return (
+    <div className="modal-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-label="Broadcast event">
+        <div className="modal-head">
+          <h3 className="form-title">📣 Broadcast “{event.title}”</h3>
+          <button type="button" className="modal-close" aria-label="Close" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="modal-body">
+          {result ? (
+            <BroadcastResult result={result} onClose={onClose} />
+          ) : (
+            <>
+              <label className="field">
+                <span>Message</span>
+                <textarea
+                  rows="4"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Write your announcement… (the event date, location and host are added automatically)"
+                  autoFocus
+                />
+              </label>
+
+              <fieldset className="bcast-channels">
+                <label className="bcast-channel">
+                  <input type="checkbox" checked={channels.email} onChange={() => toggle('email')} />
+                  <span>
+                    Email
+                    {counts && <em> · {counts.email} with an address</em>}
+                    {health && (
+                      <em className={emailLive ? 'is-live' : 'is-sim'}>
+                        {emailLive ? ' · live' : ' · simulated'}
+                      </em>
+                    )}
+                  </span>
+                </label>
+                <label className="bcast-channel">
+                  <input type="checkbox" checked={channels.sms} onChange={() => toggle('sms')} />
+                  <span>
+                    Text / SMS
+                    {counts && <em> · {counts.phone} with a phone</em>}
+                    {health && (
+                      <em className={smsLive ? 'is-live' : 'is-sim'}>
+                        {smsLive ? ' · live' : ' · not configured'}
+                      </em>
+                    )}
+                  </span>
+                </label>
+              </fieldset>
+
+              {channels.sms && !smsLive && (
+                <p className="bday-status is-warn">
+                  SMS isn’t set up yet, so texts will be simulated (not actually sent). Add Twilio
+                  credentials and phone numbers to send for real.
+                </p>
+              )}
+
+              <p className="bcast-preview">
+                Includes: <strong>{event.title}</strong>
+                {event.date && <> · {event.date}</>}
+                {event.location && <> · {event.location}</>}
+                {event.host && <> · hosted by {event.host}</>}
+              </p>
+
+              {error && <p className="bday-status is-error">{error}</p>}
+
+              <div className="modal-actions">
+                <span className="modal-actions-spacer" />
+                <button type="button" className="btn-ghost" onClick={onClose} disabled={sending}>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={send}
+                  disabled={sending || (!channels.email && !channels.sms)}
+                >
+                  {sending ? 'Sending…' : 'Send Broadcast'}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BroadcastResult({ result, onClose }) {
+  const line = (label, r) => {
+    if (!r) return null
+    const tag = r.simulated ? ' (simulated)' : ''
+    return (
+      <p key={label} className={`bday-status ${r.failed ? 'is-warn' : 'is-success'}`}>
+        {label}: {r.sent} sent{r.failed ? `, ${r.failed} failed` : ''}
+        {tag}
+        {r.note ? ` — ${r.note}` : ''}
+      </p>
+    )
+  }
+  return (
+    <>
+      <p className="bcast-done">✅ Broadcast complete.</p>
+      {line('Email', result.email)}
+      {line('SMS', result.sms)}
+      <div className="modal-actions">
+        <span className="modal-actions-spacer" />
+        <button type="button" className="btn-primary" onClick={onClose}>
+          Done
+        </button>
+      </div>
+    </>
   )
 }
 
