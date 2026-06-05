@@ -38,8 +38,11 @@ export default function Events({ authed = false, onLogin }) {
   const [pendingAction, setPendingAction] = useState(null)
   const [loginOpen, setLoginOpen] = useState(false)
 
-  // Broadcast: the event being announced (null = modal closed).
+  // Broadcast: the event being announced (null = modal closed). Broadcasting
+  // always requires re-entering the password (even when already signed in),
+  // since it messages everyone — broadcastAuthEv holds the event awaiting it.
   const [broadcastEv, setBroadcastEv] = useState(null)
+  const [broadcastAuthEv, setBroadcastAuthEv] = useState(null)
 
   // Lightbox: { media: [...], index } when a photo/video is opened full-size.
   const [lightbox, setLightbox] = useState(null)
@@ -282,10 +285,10 @@ export default function Events({ authed = false, onLogin }) {
                         <button
                           type="button"
                           className="event-edit event-broadcast"
-                          onClick={() => requireAuth(() => setBroadcastEv(ev))}
+                          onClick={() => setBroadcastAuthEv(ev)}
                           aria-label={`Broadcast ${ev.title}`}
                         >
-                          📣 Broadcast
+                          🔒 Broadcast
                         </button>
                       )}
                       <button
@@ -481,6 +484,17 @@ export default function Events({ authed = false, onLogin }) {
           onPrev={() => stepLightbox(-1)}
           onNext={() => stepLightbox(1)}
           onClose={closeLightbox}
+        />
+      )}
+
+      {broadcastAuthEv && (
+        <LoginModal
+          title="🔒 Enter password to broadcast"
+          onSuccess={() => {
+            setBroadcastEv(broadcastAuthEv)
+            setBroadcastAuthEv(null)
+          }}
+          onCancel={() => setBroadcastAuthEv(null)}
         />
       )}
 
