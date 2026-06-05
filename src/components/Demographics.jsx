@@ -382,14 +382,6 @@ export default function Demographics({ onLogout }) {
 
               <div className="field-row">
                 <label className="field">
-                  <span>Branch / Generation</span>
-                  <input
-                    value={form.branch}
-                    onChange={update('branch')}
-                    placeholder="e.g. Second Generation"
-                  />
-                </label>
-                <label className="field">
                   <span>Email</span>
                   <input
                     type="email"
@@ -398,9 +390,6 @@ export default function Demographics({ onLogout }) {
                     placeholder="name@example.com"
                   />
                 </label>
-              </div>
-
-              <div className="field-row">
                 <label className="field">
                   <span>Phone (for text alerts)</span>
                   <input
@@ -408,6 +397,17 @@ export default function Demographics({ onLogout }) {
                     value={form.phone}
                     onChange={update('phone')}
                     placeholder="+1 555 123 4567"
+                  />
+                </label>
+              </div>
+
+              <div className="field-row">
+                <label className="field">
+                  <span>Branch / Generation</span>
+                  <input
+                    value={form.branch}
+                    onChange={update('branch')}
+                    placeholder="e.g. Second Generation"
                   />
                 </label>
                 <span className="field" aria-hidden="true" />
