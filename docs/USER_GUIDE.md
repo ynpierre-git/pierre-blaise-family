@@ -1,0 +1,206 @@
+# Pierre-Blaise Family Tree — User Guide
+
+Welcome! This guide walks through everything you can do on the family website,
+for both regular visitors and family administrators.
+
+**Website:** https://www.pierreblaisefamily.com
+
+---
+
+## Contents
+
+- [Getting started](#getting-started)
+- [Family Tree](#family-tree)
+- [Jean-Marie Pierre (About)](#jean-marie-pierre-about)
+- [Events](#events)
+  - [Viewing photos & videos](#viewing-photos--videos)
+- [Birthdays](#birthdays)
+- [For administrators](#for-administrators)
+  - [Signing in](#signing-in)
+  - [Managing family members](#managing-family-members)
+  - [Adding events, photos & videos](#adding-events-photos--videos)
+  - [Broadcasting an announcement](#broadcasting-an-announcement)
+- [Frequently asked questions](#frequently-asked-questions)
+
+---
+
+## Getting started
+
+Open **https://www.pierreblaisefamily.com** in any web browser, on a phone,
+tablet, or computer. The site opens on the **Family Tree** so you see the family
+right away — no sign-in needed to look around.
+
+Across the top you'll find the navigation tabs and a thank-you note to
+Jean-Marie Pierre, who gathered our family's history.
+
+![Home page](screenshots/01-home.png)
+
+The five tabs are:
+
+| Tab | What it's for |
+|-----|----------------|
+| **Demographics** | Admin area to add/edit family members (🔒 sign-in required) |
+| **Family Tree** | The family lineage, built automatically |
+| **Events** | Gatherings, photos, and videos |
+| **Birthdays** | Whose birthday is this month |
+| **Jean-Marie Pierre** | A tribute to our family historian |
+
+> 🔒 A lock icon means that area (or action) needs the admin password.
+
+---
+
+## Family Tree
+
+The tree is built automatically from each person's **father / mother / spouse**
+links — you don't arrange it by hand. Couples appear side by side, with their
+children nested underneath, generation by generation (see the color legend).
+
+- **Refresh** — reload the latest information.
+- **Expand all / Collapse all** — open or close every branch at once.
+- Click the **+/–** button on a couple to open or close just their branch.
+- The total **member count** shows at the bottom.
+
+---
+
+## Jean-Marie Pierre (About)
+
+A tribute page honoring Jean-Marie Pierre — his photo, his upbringing, and his
+accolades and contributions to preserving our family's story.
+
+![Jean-Marie Pierre page](screenshots/02-jean-marie.png)
+
+---
+
+## Events
+
+Family gatherings and milestones, newest details and photos included. Each event
+card shows the date, title, description, location, host, and a photo/video
+gallery.
+
+![Events page](screenshots/03-events.png)
+
+### Viewing photos & videos
+
+Click (or tap) any photo or video thumbnail to open it **full-size**. In this
+larger view you can:
+
+- Use the **‹ ›** arrows (or your keyboard's left/right arrows) to move through
+  all of that event's media.
+- Press **Esc**, click the **×**, or tap outside the image to close.
+- Play videos with full controls.
+
+![Photo viewer](screenshots/04-lightbox.png)
+
+---
+
+## Birthdays
+
+Shows everyone whose birthday falls in the **current month**, so the family can
+celebrate together. If no one has a birthday this month, you'll see a friendly
+note.
+
+![Birthdays page](screenshots/05-birthdays.png)
+
+---
+
+## For administrators
+
+Adding family members, editing events, uploading photos, and sending
+announcements all require the **admin password**. Ask the family administrator
+for the credentials.
+
+### Signing in
+
+Open the **Demographics** tab. You'll see the Admin Access sign-in. Enter the
+username and password, then **Sign In**.
+
+![Admin sign-in](screenshots/06-login.png)
+
+Once signed in, you can manage the family records. (Viewing the Family Tree,
+Events, and Birthdays never requires signing in — only changes do.)
+
+### Managing family members
+
+After signing in, the **Demographics** tab shows the **Family Roster** and an
+**Add Member** button. Use **Change login** to update the admin username/password,
+or **Log out** when you're done.
+
+![Demographics admin view](screenshots/07-demographics.png)
+
+Click **＋ Add Member** to open the form. Fill in the details and **upload a
+photo** if you have one. Notable fields:
+
+- **Email** — used for birthday and event email announcements.
+- **Phone (for text alerts)** — used for text/SMS announcements. Enter it in
+  international format, e.g. `+1 555 123 4567`.
+- **Marital status** of *Married* or *Partnered* requires choosing a **spouse**.
+
+![Add a family member](screenshots/08-member-form.png)
+
+To change someone later, click their entry in the roster to edit it.
+
+> **A couple of rules to know:**
+> - A person who is listed as someone's **parent can't be deleted** (it would
+>   break the tree). Reassign or remove their children first.
+> - Setting a **spouse** on one partner is enough — the tree pairs them
+>   automatically.
+
+### Adding events, photos & videos
+
+On the **Events** tab (while signed in):
+
+- **＋ Add Event** — create a new event with title, date, location, host, and
+  description.
+- **✎ Edit** — change or delete an existing event.
+- **＋ Add photos / videos** — upload media to an event. Files upload directly to
+  secure storage, so large photos and videos are supported. Hover/tap a thumbnail
+  and use the **×** to remove a single item.
+
+### Broadcasting an announcement
+
+For **upcoming (future-dated) events**, a **📣 Broadcast** button lets you notify
+the whole family by **email** and/or **text message**.
+
+Because this messages everyone, it asks for the **password every time** — even if
+you're already signed in.
+
+![Broadcast password prompt](screenshots/09-broadcast-password.png)
+
+After entering the password, the composer opens:
+
+1. Type your **message**. The event's title, date, location, and host are added
+   automatically.
+2. Choose **Email**, **Text / SMS**, or both. Each line shows how many members
+   have an address/phone, and whether that channel is **live** (will actually
+   send) or **simulated**.
+3. Click **Send Broadcast**. You'll see a summary of how many messages were sent.
+
+![Broadcast composer](screenshots/10-broadcast-compose.png)
+
+> Only members who have an **email** (for email) or a **phone number** (for SMS)
+> saved in their record will receive the announcement. Add those in the
+> Demographics form.
+
+---
+
+## Frequently asked questions
+
+**Do I need an account to view the family tree, events, or birthdays?**
+No. Viewing is open to everyone. Only adding or changing information needs the
+admin password.
+
+**Why doesn't my edit show up on another tab right away?**
+The Family Tree is rebuilt when you open it or press **Refresh**. Switch to the
+tab and refresh to see the latest.
+
+**Someone's photo is missing.**
+If a person has no photo, a simple silhouette is shown until one is uploaded.
+
+**Are the original full-size photos kept?**
+Yes. Galleries load smaller, fast versions for speed; the full-resolution files
+are stored safely and shown when you open a photo full-size.
+
+**A family member didn't get the announcement.**
+Check that they have an **email** (for email) and a **phone number** in
+international `+1…` format (for SMS) saved in their record, and that the channel
+showed as **live** when you sent it.
