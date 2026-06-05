@@ -88,6 +88,15 @@ export default function App() {
         <span>Pierre-Blaise Family Tree</span>
         <span className="footer-dot">•</span>
         <span>Built with care for generations to come</span>
+        <span className="footer-dot">•</span>
+        <a
+          className="footer-link"
+          href="/pierre-blaise-family-guide.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📖 User Guide
+        </a>
       </footer>
     </div>
   )

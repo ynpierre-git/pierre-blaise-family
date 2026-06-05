@@ -1868,6 +1868,17 @@
   color: var(--ochre);
 }
 
+.footer-link {
+  color: var(--forest);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--ochre);
+  text-decoration: underline;
+}
+
 /* ===== Animations ===== */
 @keyframes rise {
   from {
