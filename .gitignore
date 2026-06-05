@@ -15,6 +15,9 @@ dist-ssr
 # Local JSON file-DB (pre-Supabase leftover)
 server/pbfam.db.json
 
+# Downloaded Storage backups (binaries — keep local, don't commit)
+server/backups/storage/
+
 # Vercel
 .vercel
 
