@@ -11,6 +11,7 @@ for both regular visitors and family administrators.
 
 - [Getting started](#getting-started)
 - [Family Tree](#family-tree)
+  - [Searching for a person](#searching-for-a-person)
 - [Jean-Marie Pierre (About)](#jean-marie-pierre-about)
 - [Events](#events)
   - [Viewing photos & videos](#viewing-photos--videos)
@@ -58,7 +59,23 @@ children nested underneath, generation by generation (see the color legend).
 - **Refresh** — reload the latest information.
 - **Expand all / Collapse all** — open or close every branch at once.
 - Click the **+/–** button on a couple to open or close just their branch.
+- **Search by name** — jump straight to a person (see below).
 - The total **member count** shows at the bottom.
+
+### Searching for a person
+
+Use the **Search by name** box (top of the Family Tree) to find anyone quickly.
+As you type a first name, last name, or full name, the tree narrows to **just the
+branch that person belongs to** — showing their ancestors (so you can see where
+they fit in the lineage) and all of their descendants, while everything
+unrelated is hidden.
+
+- The matching person is **highlighted**.
+- Any closed branches are **opened automatically** so the match is always
+  visible.
+- A count under the tree tells you how many people matched, e.g.
+  *"2 matches for 'pierre'"*.
+- Click the **✕** in the search box to clear it and return to the full tree.
 
 ---
 
