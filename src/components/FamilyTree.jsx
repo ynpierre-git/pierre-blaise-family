@@ -13,6 +13,7 @@ export default function FamilyTree() {
   const [members, setMembers] = useState(null) // null = loading
   const [error, setError] = useState('')
   const [collapsed, setCollapsed] = useState(() => new Set())
+  const [query, setQuery] = useState('')
 
   const load = () => {
     setError('')
@@ -31,6 +32,35 @@ export default function FamilyTree() {
     () => buildForest(members || []),
     [members],
   )
+
+  const q = query.trim().toLowerCase()
+  const searching = q.length > 0
+
+  // When searching, find matching people and prune the forest to just the
+  // branch(es) they belong to: each match keeps its ancestors (so you can see
+  // where they sit) and its full set of descendants.
+  const { displayRoots, matchIds, matchCount } = useMemo(() => {
+    if (!searching) return { displayRoots: roots, matchIds: EMPTY_SET, matchCount: 0 }
+    const ids = new Set()
+    const test = (p) => {
+      if (!p) return false
+      const full = `${p.firstName || ''} ${p.lastName || ''}`.toLowerCase()
+      const hit =
+        full.includes(q) ||
+        (p.firstName || '').toLowerCase().includes(q) ||
+        (p.lastName || '').toLowerCase().includes(q)
+      if (hit) ids.add(p.id)
+      return hit
+    }
+    const prune = (node) => {
+      const selfMatch = [test(node.person), test(node.spouse)].some(Boolean)
+      if (selfMatch) return node // keep the whole subtree under a match
+      const kids = (node.children || []).map(prune).filter(Boolean)
+      return kids.length ? { ...node, children: kids } : null
+    }
+    const pruned = roots.map(prune).filter(Boolean)
+    return { displayRoots: pruned, matchIds: ids, matchCount: ids.size }
+  }, [roots, q, searching])
 
   const toggle = (key) =>
     setCollapsed((prev) => {
@@ -52,7 +82,7 @@ export default function FamilyTree() {
           <button type="button" className="btn-ghost" onClick={load}>
             ↻ Refresh
           </button>
-          {!isEmpty && !loading && (
+          {!isEmpty && !loading && !searching && (
             <>
               <button type="button" className="btn-ghost" onClick={expandAll}>
                 Expand all
@@ -63,6 +93,28 @@ export default function FamilyTree() {
             </>
           )}
         </div>
+        {!isEmpty && !loading && (
+          <div className="ftree-search">
+            <input
+              type="search"
+              className="ftree-search-input"
+              placeholder="Search by name…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search the family tree by name"
+            />
+            {searching && (
+              <button
+                type="button"
+                className="ftree-search-clear"
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {error && <p className="bday-status is-error">{error}</p>}
@@ -77,26 +129,36 @@ export default function FamilyTree() {
             mother and spouse to grow the tree.
           </p>
         </div>
+      ) : searching && displayRoots.length === 0 ? (
+        <div className="card empty-state">
+          <p className="empty-emoji" aria-hidden="true">🔍</p>
+          <p>
+            No one matches “{query.trim()}”. Try a first or last name.
+          </p>
+        </div>
       ) : (
         <>
           <Legend />
           <div className="ftree-scroll">
             <div className="ftree">
-              {roots.map((root) => (
+              {displayRoots.map((root) => (
                 <ul key={root.person.id} className="ftree-rootlist">
                   <TreeNode
                     node={root}
                     depth={1}
-                    collapsed={collapsed}
+                    collapsed={searching ? EMPTY_SET : collapsed}
                     onToggle={toggle}
                     ancestors={EMPTY_SET}
+                    matchIds={matchIds}
                   />
                 </ul>
               ))}
             </div>
           </div>
           <p className="ftree-count">
-            {members.length} family {members.length === 1 ? 'member' : 'members'}
+            {searching
+              ? `${matchCount} ${matchCount === 1 ? 'match' : 'matches'} for “${query.trim()}”`
+              : `${members.length} family ${members.length === 1 ? 'member' : 'members'}`}
           </p>
         </>
       )}
@@ -106,7 +168,7 @@ export default function FamilyTree() {
 
 const EMPTY_SET = new Set()
 
-function TreeNode({ node, depth, collapsed, onToggle, ancestors }) {
+function TreeNode({ node, depth, collapsed, onToggle, ancestors, matchIds }) {
   const key = node.person.id
   if (ancestors.has(key)) return null // guard against relationship cycles
 
@@ -118,7 +180,12 @@ function TreeNode({ node, depth, collapsed, onToggle, ancestors }) {
   return (
     <li>
       <div className="ftree-node">
-        <CoupleCard person={node.person} spouse={node.spouse} depth={depth} />
+        <CoupleCard
+          person={node.person}
+          spouse={node.spouse}
+          depth={depth}
+          matchIds={matchIds}
+        />
         {hasKids && (
           <button
             type="button"
@@ -147,6 +214,7 @@ function TreeNode({ node, depth, collapsed, onToggle, ancestors }) {
               collapsed={collapsed}
               onToggle={onToggle}
               ancestors={nextAncestors}
+              matchIds={matchIds}
             />
           ))}
         </ul>
@@ -155,25 +223,26 @@ function TreeNode({ node, depth, collapsed, onToggle, ancestors }) {
   )
 }
 
-function CoupleCard({ person, spouse, depth }) {
+function CoupleCard({ person, spouse, depth, matchIds }) {
+  const isMatch = (p) => p && matchIds && matchIds.has(p.id)
   return (
     <div className={`couple-card gen-${Math.min(depth, 4)} ${spouse ? 'is-couple' : ''}`}>
-      <PersonChip p={person} />
+      <PersonChip p={person} match={isMatch(person)} />
       {spouse && (
         <>
           <span className="marriage" aria-label="married to">
             &amp;
           </span>
-          <PersonChip p={spouse} married />
+          <PersonChip p={spouse} married match={isMatch(spouse)} />
         </>
       )}
     </div>
   )
 }
 
-function PersonChip({ p, married }) {
+function PersonChip({ p, married, match }) {
   return (
-    <div className={`chip ${married ? 'chip-married' : ''}`}>
+    <div className={`chip ${married ? 'chip-married' : ''} ${match ? 'chip-match' : ''}`}>
       <Avatar member={{ firstName: p.firstName, photo: p.photo }} className="chip-avatar" />
       <div className="chip-info">
         <span className="chip-name">{p.firstName}</span>

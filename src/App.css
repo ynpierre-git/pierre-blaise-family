@@ -1694,6 +1694,55 @@
   flex-wrap: wrap;
 }
 
+.ftree-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ftree-search-input {
+  width: 220px;
+  max-width: 60vw;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.5rem 1.9rem 0.5rem 0.85rem;
+  border: 1px solid var(--forest);
+  border-radius: 8px;
+  background: var(--parchment);
+  color: var(--ink);
+}
+
+.ftree-search-input::placeholder {
+  color: var(--ink-soft);
+}
+
+.ftree-search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(47, 74, 60, 0.25);
+}
+
+.ftree-search-clear {
+  position: absolute;
+  right: 0.45rem;
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+
+.ftree-search-clear:hover {
+  color: var(--burgundy);
+}
+
+.chip-match {
+  background: rgba(217, 160, 91, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px var(--ochre);
+}
+
 .ftree-node {
   position: relative;
   display: flex;
