@@ -344,6 +344,49 @@
   box-shadow: 0 0 0 3px rgba(47, 74, 60, 0.12);
 }
 
+.field-hint {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-soft);
+  opacity: 0.8;
+}
+
+/* Birthday: month / day / optional year, side by side. */
+.bday-fields {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.bday-fields .bday-year {
+  width: 100%;
+}
+
+/* Deceased toggle + date of death */
+.field-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.field-check input[type='checkbox'] {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--forest);
+  flex: none;
+}
+
+.field-check span {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
 .btn-primary {
   margin-top: 0.5rem;
   width: 100%;
@@ -384,6 +427,51 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.1rem;
+}
+
+/* Roster search — quick lookup of a member to edit. */
+.roster-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.1rem;
+}
+
+.roster-search-input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  padding: 0.62rem 2.1rem 0.62rem 0.85rem;
+  background: var(--parchment);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.roster-search-input::placeholder {
+  color: var(--ink-soft);
+}
+
+.roster-search-input:focus {
+  outline: none;
+  border-color: var(--forest);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(47, 74, 60, 0.12);
+}
+
+.roster-search-clear {
+  position: absolute;
+  right: 0.55rem;
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.roster-search-clear:hover {
+  color: var(--burgundy);
 }
 
 .count-pill {

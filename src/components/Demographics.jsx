@@ -19,6 +19,8 @@ const EMPTY = {
   spouseId: '',
   fatherId: '',
   motherId: '',
+  deceased: false,
+  dateOfDeath: '',
   notes: '',
 }
 
@@ -35,6 +37,26 @@ const MARITAL_STATUSES = [
 // Statuses that require a "married / partnered to" person to be chosen.
 const REQUIRES_SPOUSE = ['Married', 'Partnered']
 
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+]
+const DAYS = Array.from({ length: 31 }, (_, i) => i + 1)
+
+// Birthdays are stored as YYYY-MM-DD. The year is optional — when it's unknown
+// we store a 0000 placeholder so the rest of the app (which only reads month/day)
+// keeps working and the tree knows to omit the birth year.
+function splitBirthday(iso) {
+  if (!iso) return { y: '', m: '', d: '' }
+  const [y = '', m = '', d = ''] = iso.split('-')
+  return { y: y === '0000' ? '' : y, m, d }
+}
+function joinBirthday({ y, m, d }) {
+  if (!m || !d) return '' // a day and month are the minimum needed to save
+  const yy = y ? String(y).padStart(4, '0') : '0000'
+  return `${yy}-${m}-${d}`
+}
+
 export default function Demographics({ onLogout }) {
   const [members, setMembers] = useState(null) // null = loading
   const [loadError, setLoadError] = useState('')
@@ -47,6 +69,10 @@ export default function Demographics({ onLogout }) {
   const [showAccount, setShowAccount] = useState(false)
   const [username, setUsername] = useState(() => getCredentials().username)
   const [actionError, setActionError] = useState('')
+  // Birthday is edited as separate month / day / year parts (year optional).
+  const [bday, setBdayState] = useState({ y: '', m: '', d: '' })
+  // Roster search — quickly find a member to edit.
+  const [rosterQuery, setRosterQuery] = useState('')
 
   // Load records from the database.
   useEffect(() => {
@@ -79,6 +105,13 @@ export default function Demographics({ onLogout }) {
   const update = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }))
 
+  // Update one birthday part, keeping the form's stored value in sync.
+  const setBday = (part) => (e) => {
+    const next = { ...bday, [part]: e.target.value }
+    setBdayState(next)
+    setForm((f) => ({ ...f, birthday: joinBirthday(next) }))
+  }
+
   // Marital status change — clear the spouse when set to single/none.
   const onMaritalChange = (e) => {
     const v = e.target.value
@@ -99,6 +132,7 @@ export default function Demographics({ onLogout }) {
 
   const openModal = () => {
     setForm(EMPTY)
+    setBdayState({ y: '', m: '', d: '' })
     setEditingId(null)
     setFormError('')
     setIsOpen(true)
@@ -106,6 +140,7 @@ export default function Demographics({ onLogout }) {
 
   const openEdit = (member) => {
     setForm({ ...EMPTY, ...member })
+    setBdayState(splitBirthday(member.birthday))
     setEditingId(member.id)
     setFormError('')
     setIsOpen(true)
@@ -196,6 +231,11 @@ export default function Demographics({ onLogout }) {
     return p ? `${p.firstName} ${p.lastName}`.trim() : null
   }
 
+  const rq = rosterQuery.trim().toLowerCase()
+  const visibleMembers = (members || []).filter(
+    (m) => !rq || `${m.firstName} ${m.lastName}`.toLowerCase().includes(rq),
+  )
+
   return (
     <section className="section">
       <div className="admin-bar">
@@ -231,9 +271,36 @@ export default function Demographics({ onLogout }) {
         <div className="roster-head">
           <h3 className="form-title">Family Roster</h3>
           <span className="count-pill">
-            {members === null ? '…' : `${members.length} people`}
+            {members === null
+              ? '…'
+              : rq
+                ? `${visibleMembers.length} of ${members.length}`
+                : `${members.length} people`}
           </span>
         </div>
+
+        {members !== null && members.length > 0 && (
+          <div className="roster-search">
+            <input
+              type="search"
+              className="roster-search-input"
+              placeholder="🔍 Search a member to edit…"
+              value={rosterQuery}
+              onChange={(e) => setRosterQuery(e.target.value)}
+              aria-label="Search the family roster by name"
+            />
+            {rq && (
+              <button
+                type="button"
+                className="roster-search-clear"
+                onClick={() => setRosterQuery('')}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        )}
 
         {members === null ? (
           <p className="roster-loading">Loading records…</p>
@@ -241,9 +308,13 @@ export default function Demographics({ onLogout }) {
           <p className="roster-loading">
             No records yet — click “＋ Add Member” to add the first person.
           </p>
+        ) : visibleMembers.length === 0 ? (
+          <p className="roster-loading">
+            No one matches “{rosterQuery.trim()}”. Try another name.
+          </p>
         ) : (
           <ul className="roster-list">
-            {members.map((m) => (
+            {visibleMembers.map((m) => (
               <li
                 key={m.id}
                 className={`roster-row ${justAdded === m.id ? 'roster-row-new' : ''}`}
@@ -364,10 +435,50 @@ export default function Demographics({ onLogout }) {
               </div>
 
               <div className="field-row">
-                <label className="field">
-                  <span>Birthday</span>
-                  <input type="date" value={form.birthday} onChange={update('birthday')} />
-                </label>
+                <div className="field">
+                  <span>
+                    Birthday <span className="field-hint">(year optional)</span>
+                  </span>
+                  <div className="bday-fields">
+                    <select
+                      className="bday-month"
+                      value={bday.m}
+                      onChange={setBday('m')}
+                      aria-label="Birth month"
+                    >
+                      <option value="">Month</option>
+                      {MONTHS.map((name, i) => (
+                        <option key={name} value={String(i + 1).padStart(2, '0')}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="bday-day"
+                      value={bday.d}
+                      onChange={setBday('d')}
+                      aria-label="Birth day"
+                    >
+                      <option value="">Day</option>
+                      {DAYS.map((d) => (
+                        <option key={d} value={String(d).padStart(2, '0')}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      className="bday-year"
+                      type="number"
+                      inputMode="numeric"
+                      min="1900"
+                      max="2100"
+                      value={bday.y}
+                      onChange={setBday('y')}
+                      placeholder="Year"
+                      aria-label="Birth year (optional)"
+                    />
+                  </div>
+                </div>
                 <label className="field">
                   <span>Gender</span>
                   <select value={form.gender} onChange={update('gender')}>
@@ -496,6 +607,34 @@ export default function Demographics({ onLogout }) {
                   placeholder="A short note about this person…"
                 />
               </label>
+
+              <label className="field field-check">
+                <input
+                  type="checkbox"
+                  checked={!!form.deceased}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      deceased: e.target.checked,
+                      dateOfDeath: e.target.checked ? f.dateOfDeath : '',
+                    }))
+                  }
+                />
+                <span>This person is deceased</span>
+              </label>
+
+              {form.deceased && (
+                <label className="field">
+                  <span>
+                    Date of death <span className="field-hint">(optional)</span>
+                  </span>
+                  <input
+                    type="date"
+                    value={form.dateOfDeath || ''}
+                    onChange={update('dateOfDeath')}
+                  />
+                </label>
+              )}
 
               {formError && <p className="bday-status is-error">{formError}</p>}
               {editingHasChildren && (

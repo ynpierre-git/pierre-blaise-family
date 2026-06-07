@@ -246,9 +246,18 @@ function PersonChip({ p, married, match }) {
         <span className="chip-name">{p.firstName}</span>
         {p.lastName && <span className="chip-sur">{p.lastName}</span>}
       </span>
-      {p.born && <span className="chip-born">b. {p.born}</span>}
+      {lifespan(p) && <span className="chip-born">{lifespan(p)}</span>}
     </div>
   )
+}
+
+// A compact life span for the chip: "1950 – 2010", "b. 1950", "b. 1950 †",
+// "d. 2010", or just "†" when someone is marked deceased without dates.
+function lifespan(p) {
+  if (p.born && p.died) return `${p.born} – ${p.died}`
+  if (p.born) return p.deceased ? `b. ${p.born} †` : `b. ${p.born}`
+  if (p.died) return `d. ${p.died}`
+  return p.deceased ? '†' : ''
 }
 
 function Legend() {
@@ -274,6 +283,14 @@ function countDescendants(node) {
     n += 1 + (c.spouse ? 1 : 0) + countDescendants(c)
   }
   return n
+}
+
+// Birth year for display/sorting — empty when unknown (incl. the 0000 placeholder
+// used for birthdays saved without a year).
+function birthYear(birthday) {
+  if (!birthday) return ''
+  const y = birthday.split('-')[0]
+  return y && y !== '0000' ? y : ''
 }
 
 // ── Build a nested forest of couples/people from the flat member list ──
@@ -333,7 +350,9 @@ function buildForest(members) {
     id: idOf(m),
     firstName: m.firstName,
     lastName: m.lastName,
-    born: m.birthday ? m.birthday.split('-')[0] : '',
+    born: birthYear(m.birthday),
+    died: birthYear(m.dateOfDeath),
+    deceased: !!m.deceased,
     photo: m.photo,
   })
 
