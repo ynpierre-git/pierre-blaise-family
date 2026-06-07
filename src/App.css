@@ -1691,8 +1691,8 @@
 
 .chip-line {
   display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
+  flex-direction: column;
+  align-items: flex-start;
   white-space: nowrap;
 }
 
