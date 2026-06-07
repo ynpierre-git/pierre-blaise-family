@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import Demographics from './components/Demographics.jsx'
 import FamilyTree from './components/FamilyTree.jsx'
+import WhoIs from './components/WhoIs.jsx'
 import Events from './components/Events.jsx'
 import Birthdays from './components/Birthdays.jsx'
 import JeanMariePierre from './components/JeanMariePierre.jsx'
@@ -10,6 +11,7 @@ import Login from './components/Login.jsx'
 const TABS = [
   { id: 'demographics', label: 'Demographics', hint: 'Admin' },
   { id: 'tree', label: 'Family Tree', hint: 'Lineage' },
+  { id: 'whois', label: 'Who is?', hint: 'Lookup' },
   { id: 'events', label: 'Events', hint: 'Gatherings' },
   { id: 'birthdays', label: 'Birthdays', hint: 'This Month' },
   { id: 'jmpierre', label: 'Jean-Marie Pierre', hint: 'About' },
@@ -47,14 +49,16 @@ export default function App() {
           <p className="roots">
             Our family has its roots in <strong>Arcahaie, Haïti</strong> 🇭🇹
           </p>
-          <p className="thanks">
-            A heartfelt <em className="thanks-ty">THANK YOU</em> to{' '}
-            <strong>Jean-Marie Pierre</strong> for his
-            remarkable work gathering and preserving our family’s history. His
-            dedication, patience, and vision have given us a priceless gift, one
-            that strengthens our identity and keeps our legacy alive for
-            generations to come. ❤️🙏🏿
-          </p>
+          {active === 'tree' && (
+            <p className="thanks">
+              A heartfelt <em className="thanks-ty">THANK YOU</em> to{' '}
+              <strong>Jean-Marie Pierre</strong> for his
+              remarkable work gathering and preserving our family’s history. His
+              dedication, patience, and vision have given us a priceless gift, one
+              that strengthens our identity and keeps our legacy alive for
+              generations to come. ❤️🙏🏿
+            </p>
+          )}
         </div>
       </header>
 
@@ -79,6 +83,7 @@ export default function App() {
         {active === 'demographics' &&
           (authed ? <Demographics onLogout={logout} /> : <Login onLogin={login} />)}
         {active === 'tree' && <FamilyTree />}
+        {active === 'whois' && <WhoIs />}
         {active === 'jmpierre' && <JeanMariePierre authed={authed} onLogin={login} />}
         {active === 'events' && <Events authed={authed} onLogin={login} />}
         {active === 'birthdays' && <Birthdays />}

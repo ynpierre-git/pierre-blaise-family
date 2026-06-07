@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { membersApi } from '../api.js'
 
 const GENERATION_LABELS = [
@@ -31,6 +31,16 @@ export default function FamilyTree() {
     () => buildForest(members || []),
     [members],
   )
+
+  // Start with every family/branch collapsed the first time the tree loads
+  // (the component remounts each time the tab is opened, so this runs per visit).
+  const didInitCollapse = useRef(false)
+  useEffect(() => {
+    if (!didInitCollapse.current && members && members.length) {
+      setCollapsed(new Set(collapsibleKeys))
+      didInitCollapse.current = true
+    }
+  }, [members, collapsibleKeys])
 
   const q = query.trim().toLowerCase()
   const searching = q.length > 0

@@ -353,15 +353,27 @@
   opacity: 0.8;
 }
 
-/* Birthday: month / day / optional year, side by side. */
+/* Birthday: compact MM / DD / YYYY (year optional). */
 .bday-fields {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  display: inline-flex;
+  align-items: center;
   gap: 0.4rem;
 }
 
+.bday-fields .bday-num {
+  width: 3.2rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
 .bday-fields .bday-year {
-  width: 100%;
+  width: 4.6rem;
+}
+
+.bday-sep {
+  color: var(--ink-soft);
+  font-weight: 600;
 }
 
 /* Deceased toggle + date of death */
@@ -1090,6 +1102,12 @@
   width: 78px;
   height: 78px;
   font-size: 2rem;
+}
+
+.avatar-sm {
+  width: 34px;
+  height: 34px;
+  font-size: 0.85rem;
 }
 
 /* Photo uploader in the admin form */
@@ -2235,5 +2253,330 @@
   }
   .jmp-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Who is? ===== */
+.whois-search {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.whois-search-input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--parchment);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.whois-search-input::placeholder {
+  color: var(--ink-soft);
+}
+
+.whois-search-input:focus {
+  outline: none;
+  border-color: var(--forest);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(47, 74, 60, 0.12);
+}
+
+.whois-results {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  box-shadow: 0 14px 30px rgba(43, 38, 32, 0.16);
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.whois-result-empty {
+  padding: 0.7rem 0.85rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.whois-result {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.whois-result:hover,
+.whois-result:focus-visible {
+  background: rgba(47, 74, 60, 0.08);
+  outline: none;
+}
+
+.whois-result-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.whois-result-meta {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.whois-profile {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.whois-card {
+  padding: 1.4rem;
+}
+
+.whois-head {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Main profile card: big photo on the left, demographics on the right. */
+.whois-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.6rem;
+}
+
+.whois-photo {
+  width: 200px;
+  height: 200px;
+  font-size: 4.2rem;
+  flex: none;
+}
+
+.whois-main-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.whois-name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--forest-deep);
+  margin: 0;
+}
+
+.whois-life,
+.whois-gender {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.whois-departed {
+  font-style: italic;
+}
+
+.whois-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1.4rem;
+  margin: 0;
+}
+
+.whois-main-info .whois-facts {
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.whois-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.whois-fact dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.whois-fact dd {
+  margin: 0;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.whois-section-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--forest-deep);
+  margin: 0 0 0.9rem;
+}
+
+.whois-rel-group {
+  margin-bottom: 1rem;
+}
+
+.whois-rel-group:last-child {
+  margin-bottom: 0;
+}
+
+.whois-rel-label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+}
+
+.whois-none {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.whois-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.whois-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.7rem 0.35rem 0.4rem;
+  background: var(--parchment);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.whois-chip:hover {
+  border-color: var(--forest);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.whois-chip.is-self {
+  cursor: default;
+  background: rgba(189, 115, 51, 0.16);
+  border-color: var(--ochre-soft);
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.whois-chip-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.whois-chip-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.whois-chip-meta {
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.whois-inline-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--forest);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.whois-inline-link:hover {
+  color: var(--ochre);
+}
+
+.whois-lineage {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.whois-lineage-step {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  position: relative;
+  padding-left: 0.2rem;
+}
+
+.whois-lineage-step:not(:last-child)::after {
+  content: '↓';
+  position: absolute;
+  left: 2.2rem;
+  bottom: -0.55rem;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.whois-lineage-rank {
+  flex: none;
+  width: 3.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ochre);
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .whois-facts {
+    grid-template-columns: 1fr;
+  }
+  .whois-card-main {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .whois-photo {
+    width: 150px;
+    height: 150px;
+  }
+  .whois-main-info {
+    width: 100%;
+  }
+  .whois-main-info .whois-facts {
+    text-align: left;
   }
 }

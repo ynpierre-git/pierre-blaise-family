@@ -37,15 +37,9 @@ const MARITAL_STATUSES = [
 // Statuses that require a "married / partnered to" person to be chosen.
 const REQUIRES_SPOUSE = ['Married', 'Partnered']
 
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
-const DAYS = Array.from({ length: 31 }, (_, i) => i + 1)
-
-// Birthdays are stored as YYYY-MM-DD. The year is optional — when it's unknown
-// we store a 0000 placeholder so the rest of the app (which only reads month/day)
-// keeps working and the tree knows to omit the birth year.
+// Birthdays are stored as YYYY-MM-DD. They're entered as MM / DD / YYYY, with the
+// year optional — when it's unknown we store a 0000 placeholder so the rest of the
+// app (which only reads month/day) keeps working and the tree omits the year.
 function splitBirthday(iso) {
   if (!iso) return { y: '', m: '', d: '' }
   const [y = '', m = '', d = ''] = iso.split('-')
@@ -54,7 +48,7 @@ function splitBirthday(iso) {
 function joinBirthday({ y, m, d }) {
   if (!m || !d) return '' // a day and month are the minimum needed to save
   const yy = y ? String(y).padStart(4, '0') : '0000'
-  return `${yy}-${m}-${d}`
+  return `${yy}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
 }
 
 export default function Demographics({ onLogout }) {
@@ -105,9 +99,12 @@ export default function Demographics({ onLogout }) {
   const update = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }))
 
-  // Update one birthday part, keeping the form's stored value in sync.
+  // Update one birthday part (digits only; MM/DD max 2, YYYY max 4),
+  // keeping the form's stored value in sync.
   const setBday = (part) => (e) => {
-    const next = { ...bday, [part]: e.target.value }
+    const max = part === 'y' ? 4 : 2
+    const val = e.target.value.replace(/\D/g, '').slice(0, max)
+    const next = { ...bday, [part]: val }
     setBdayState(next)
     setForm((f) => ({ ...f, birthday: joinBirthday(next) }))
   }
@@ -434,61 +431,41 @@ export default function Demographics({ onLogout }) {
                 </label>
               </div>
 
-              <div className="field-row">
-                <div className="field">
-                  <span>
-                    Birthday <span className="field-hint">(year optional)</span>
-                  </span>
-                  <div className="bday-fields">
-                    <select
-                      className="bday-month"
-                      value={bday.m}
-                      onChange={setBday('m')}
-                      aria-label="Birth month"
-                    >
-                      <option value="">Month</option>
-                      {MONTHS.map((name, i) => (
-                        <option key={name} value={String(i + 1).padStart(2, '0')}>
-                          {name}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      className="bday-day"
-                      value={bday.d}
-                      onChange={setBday('d')}
-                      aria-label="Birth day"
-                    >
-                      <option value="">Day</option>
-                      {DAYS.map((d) => (
-                        <option key={d} value={String(d).padStart(2, '0')}>
-                          {d}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      className="bday-year"
-                      type="number"
-                      inputMode="numeric"
-                      min="1900"
-                      max="2100"
-                      value={bday.y}
-                      onChange={setBday('y')}
-                      placeholder="Year"
-                      aria-label="Birth year (optional)"
-                    />
-                  </div>
+              <div className="field bday-field">
+                <span>
+                  Birthday <span className="field-hint">(year optional)</span>
+                </span>
+                <div className="bday-fields">
+                  <input
+                    className="bday-num"
+                    type="text"
+                    inputMode="numeric"
+                    value={bday.m}
+                    onChange={setBday('m')}
+                    placeholder="MM"
+                    aria-label="Birth month (MM)"
+                  />
+                  <span className="bday-sep" aria-hidden="true">/</span>
+                  <input
+                    className="bday-num"
+                    type="text"
+                    inputMode="numeric"
+                    value={bday.d}
+                    onChange={setBday('d')}
+                    placeholder="DD"
+                    aria-label="Birth day (DD)"
+                  />
+                  <span className="bday-sep" aria-hidden="true">/</span>
+                  <input
+                    className="bday-num bday-year"
+                    type="text"
+                    inputMode="numeric"
+                    value={bday.y}
+                    onChange={setBday('y')}
+                    placeholder="YYYY"
+                    aria-label="Birth year, optional (YYYY)"
+                  />
                 </div>
-                <label className="field">
-                  <span>Gender</span>
-                  <select value={form.gender} onChange={update('gender')}>
-                    <option value="">Select…</option>
-                    <option>Female</option>
-                    <option>Male</option>
-                    <option>Other</option>
-                    <option>Prefer not to say</option>
-                  </select>
-                </label>
               </div>
 
               <div className="field-row">
@@ -521,7 +498,16 @@ export default function Demographics({ onLogout }) {
                     placeholder="e.g. Second Generation"
                   />
                 </label>
-                <span className="field" aria-hidden="true" />
+                <label className="field">
+                  <span>Gender</span>
+                  <select value={form.gender} onChange={update('gender')}>
+                    <option value="">Select…</option>
+                    <option>Female</option>
+                    <option>Male</option>
+                    <option>Other</option>
+                    <option>Prefer not to say</option>
+                  </select>
+                </label>
               </div>
 
               <div className="field-row">
