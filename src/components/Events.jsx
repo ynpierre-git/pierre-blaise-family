@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   eventsApi,
   uploadEventMedia,
@@ -308,42 +308,12 @@ export default function Events({ authed = false, onLogin }) {
                   </div>
 
                   {media.length > 0 && (
-                    <div className="media-gallery">
-                      {media.map((m, idx) => (
-                        <figure key={m.id} className="media-item">
-                          <button
-                            type="button"
-                            className="media-open"
-                            onClick={() => openLightbox(media, idx)}
-                            aria-label={`View ${m.name || (m.type === 'video' ? 'video' : 'photo')} larger`}
-                          >
-                            {m.type === 'video' ? (
-                              <video src={m.url} preload="metadata" muted playsInline />
-                            ) : (
-                              <img
-                                src={sizedImage(m.url, 500)}
-                                alt={m.name}
-                                loading="lazy"
-                              />
-                            )}
-                            <span className="media-zoom" aria-hidden="true">⤢</span>
-                          </button>
-                          {authed && (
-                            <button
-                              type="button"
-                              className="media-remove"
-                              aria-label={`Remove ${m.name}`}
-                              onClick={() => removeMedia(ev.id, m.id)}
-                            >
-                              ×
-                            </button>
-                          )}
-                          {m.type === 'video' && (
-                            <span className="media-badge">▶ Video</span>
-                          )}
-                        </figure>
-                      ))}
-                    </div>
+                    <MediaCarousel
+                      media={media}
+                      authed={authed}
+                      onOpen={openLightbox}
+                      onRemove={(mediaId) => removeMedia(ev.id, mediaId)}
+                    />
                   )}
 
                   {authed ? (
@@ -677,6 +647,109 @@ function BroadcastResult({ result, onClose }) {
         </button>
       </div>
     </>
+  )
+}
+
+// Photos/videos for an event are shown as a swipeable stack: one at a time,
+// with arrows, touch-swipe, and dots. Clicking a slide opens the full lightbox.
+function MediaCarousel({ media, authed, onOpen, onRemove }) {
+  const [index, setIndex] = useState(0)
+  const touch = useRef(null)
+
+  const count = media.length
+  const go = (delta) => setIndex((i) => (i + delta + count) % count)
+
+  // Keep the index valid when the list shrinks (e.g. after removing an item).
+  useEffect(() => {
+    if (index > count - 1) setIndex(Math.max(0, count - 1))
+  }, [count, index])
+
+  const onTouchStart = (e) => {
+    touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const onTouchEnd = (e) => {
+    if (!touch.current) return
+    const dx = e.changedTouches[0].clientX - touch.current.x
+    const dy = e.changedTouches[0].clientY - touch.current.y
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1)
+    touch.current = null
+  }
+
+  const multiple = count > 1
+
+  return (
+    <div className="media-carousel">
+      <div className="media-viewport" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <div className="media-track" style={{ transform: `translateX(-${index * 100}%)` }}>
+          {media.map((m, idx) => (
+            <figure key={m.id} className="media-slide">
+              <button
+                type="button"
+                className="media-open"
+                onClick={() => onOpen(media, idx)}
+                aria-label={`View ${m.name || (m.type === 'video' ? 'video' : 'photo')} larger`}
+                tabIndex={idx === index ? 0 : -1}
+              >
+                {m.type === 'video' ? (
+                  <video src={m.url} preload="metadata" muted playsInline />
+                ) : (
+                  <img src={sizedImage(m.url, 900)} alt={m.name} loading="lazy" />
+                )}
+                <span className="media-zoom" aria-hidden="true">⤢</span>
+              </button>
+              {authed && (
+                <button
+                  type="button"
+                  className="media-remove"
+                  aria-label={`Remove ${m.name}`}
+                  onClick={() => onRemove(m.id)}
+                >
+                  ×
+                </button>
+              )}
+              {m.type === 'video' && <span className="media-badge">▶ Video</span>}
+            </figure>
+          ))}
+        </div>
+
+        {multiple && (
+          <>
+            <button
+              type="button"
+              className="media-cnav media-cprev"
+              aria-label="Previous photo"
+              onClick={() => go(-1)}
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              className="media-cnav media-cnext"
+              aria-label="Next photo"
+              onClick={() => go(1)}
+            >
+              ›
+            </button>
+          </>
+        )}
+      </div>
+
+      {multiple && (
+        <div className="media-dots">
+          {media.map((m, idx) => (
+            <button
+              key={m.id}
+              type="button"
+              className={`media-dot ${idx === index ? 'is-active' : ''}`}
+              aria-label={`Go to item ${idx + 1} of ${count}`}
+              aria-current={idx === index}
+              onClick={() => setIndex(idx)}
+            />
+          ))}
+          <span className="media-count">{index + 1} / {count}</span>
+        </div>
+      )}
+    </div>
   )
 }
 

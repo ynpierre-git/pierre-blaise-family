@@ -98,8 +98,15 @@ gallery.
 
 ### Viewing photos & videos
 
-Click (or tap) any photo or video thumbnail to open it **full-size**. In this
-larger view you can:
+Each event's photos and videos appear as a **swipeable stack** — one at a time —
+rather than spread side by side. To browse them:
+
+- **Swipe left or right** (on a phone or tablet), or use the **‹ ›** arrows.
+- The **dots** under the photo show how many there are and which you're on; tap a
+  dot to jump straight to that one.
+
+Click (or tap) the photo or video to open it **full-size**. In this larger view
+you can:
 
 - Use the **‹ ›** arrows (or your keyboard's left/right arrows) to move through
   all of that event's media.
