@@ -1580,7 +1580,7 @@
   justify-content: center;
   list-style: none;
   margin: 0;
-  padding-top: 26px;
+  padding-top: 16px;
   position: relative;
 }
 
@@ -1598,7 +1598,7 @@
 .ftree li {
   list-style: none;
   position: relative;
-  padding: 26px 12px 0;
+  padding: 16px 6px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1612,7 +1612,7 @@
   top: 0;
   right: 50%;
   width: 50%;
-  height: 26px;
+  height: 16px;
   border-top: 2px solid var(--line);
 }
 .ftree li::after {
@@ -1626,7 +1626,7 @@
   display: none;
 }
 .ftree li:only-child {
-  padding-top: 26px;
+  padding-top: 16px;
 }
 /* Trim the dangling ends on the outermost children */
 .ftree li:first-child::before,
@@ -1647,7 +1647,7 @@
   top: 0;
   left: 50%;
   width: 0;
-  height: 26px;
+  height: 16px;
   border-left: 2px solid var(--line);
 }
 
@@ -1661,9 +1661,9 @@
   background: var(--card);
   border: 1px solid var(--line);
   border-top: 3px solid var(--forest);
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: var(--shadow-soft);
-  padding: 0.35rem;
+  padding: 0.15rem 0.2rem;
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s,
     border-color 0.25s;
 }
@@ -1682,63 +1682,37 @@
 
 .chip {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.3rem 0.5rem;
-  width: 132px;
-}
-
-.chip-avatar {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(140deg, var(--forest), var(--forest-deep));
-  color: var(--parchment);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.05rem;
-}
-
-.chip-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  display: block;
-}
-
-.chip-info {
-  display: flex;
   flex-direction: column;
-  line-height: 1.15;
-  text-align: left;
-  min-width: 0;
+  align-items: flex-start;
+  gap: 0.02rem;
+  padding: 0.22rem 0.5rem;
+  line-height: 1.1;
+}
+
+.chip-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  white-space: nowrap;
 }
 
 .chip-name {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.85rem;
   color: var(--ink);
-  white-space: nowrap;
 }
 
 .chip-sur {
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 0.72rem;
+  font-weight: 500;
+  font-size: 0.78rem;
   color: var(--forest);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .chip-born {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   letter-spacing: 0.03em;
   color: var(--ochre);
   font-weight: 600;
@@ -1747,10 +1721,10 @@
 .marriage {
   flex-shrink: 0;
   align-self: center;
-  padding: 0 0.1rem;
+  padding: 0 0.05rem;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--burgundy);
 }
 
@@ -1819,23 +1793,23 @@
 
 .ftree-toggle {
   position: absolute;
-  bottom: -13px;
+  bottom: -11px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
-  min-width: 26px;
-  height: 26px;
-  padding: 0 6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 13px;
+  border-radius: 11px;
   border: 2px solid var(--forest);
   background: var(--card);
   color: var(--forest);
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   line-height: 1;
   cursor: pointer;
   box-shadow: var(--shadow-soft);

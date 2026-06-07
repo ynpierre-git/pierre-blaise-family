@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import Avatar from './Avatar.jsx'
 import { membersApi } from '../api.js'
 
 const GENERATION_LABELS = [
@@ -243,12 +242,11 @@ function CoupleCard({ person, spouse, depth, matchIds }) {
 function PersonChip({ p, married, match }) {
   return (
     <div className={`chip ${married ? 'chip-married' : ''} ${match ? 'chip-match' : ''}`}>
-      <Avatar member={{ firstName: p.firstName, photo: p.photo }} className="chip-avatar" />
-      <div className="chip-info">
+      <span className="chip-line">
         <span className="chip-name">{p.firstName}</span>
-        <span className="chip-sur">{p.lastName}</span>
-        {p.born && <span className="chip-born">b. {p.born}</span>}
-      </div>
+        {p.lastName && <span className="chip-sur">{p.lastName}</span>}
+      </span>
+      {p.born && <span className="chip-born">b. {p.born}</span>}
     </div>
   )
 }
