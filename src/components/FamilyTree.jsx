@@ -27,20 +27,21 @@ export default function FamilyTree() {
 
   useEffect(load, [])
 
-  const { roots, collapsibleKeys } = useMemo(
+  const { roots, collapsibleKeys, deepCollapseKeys } = useMemo(
     () => buildForest(members || []),
     [members],
   )
 
-  // Start with every family/branch collapsed the first time the tree loads
-  // (the component remounts each time the tab is opened, so this runs per visit).
+  // On first load, collapse only the third generation and beyond (gens 1 and 2
+  // stay expanded). The component remounts each time the tab is opened, so this
+  // runs per visit.
   const didInitCollapse = useRef(false)
   useEffect(() => {
     if (!didInitCollapse.current && members && members.length) {
-      setCollapsed(new Set(collapsibleKeys))
+      setCollapsed(new Set(deepCollapseKeys))
       didInitCollapse.current = true
     }
-  }, [members, collapsibleKeys])
+  }, [members, deepCollapseKeys])
 
   const q = query.trim().toLowerCase()
   const searching = q.length > 0
@@ -387,19 +388,23 @@ function buildForest(members) {
     else roots.push(node)
   }
 
-  // Sort by birth year (unknown years sink to the bottom), and collect collapsible keys.
+  // Sort by birth year (unknown years sink to the bottom), and collect collapsible
+  // keys. `deepCollapseKeys` holds only the 3rd-generation-and-beyond nodes, used to
+  // collapse everything below the second generation on first load (depth 1 = gen 1).
   const byBorn = (a, b) =>
     (Number(a.person.born) || 9999) - (Number(b.person.born) || 9999)
   const collapsibleKeys = []
-  const sortAndCollect = (n) => {
+  const deepCollapseKeys = []
+  const sortAndCollect = (n, depth) => {
     if (n.children.length) {
       n.children.sort(byBorn)
       collapsibleKeys.push(n.person.id)
-      n.children.forEach(sortAndCollect)
+      if (depth >= 3) deepCollapseKeys.push(n.person.id)
+      n.children.forEach((c) => sortAndCollect(c, depth + 1))
     }
   }
   roots.sort(byBorn)
-  roots.forEach(sortAndCollect)
+  roots.forEach((r) => sortAndCollect(r, 1))
 
-  return { roots, collapsibleKeys }
+  return { roots, collapsibleKeys, deepCollapseKeys }
 }
