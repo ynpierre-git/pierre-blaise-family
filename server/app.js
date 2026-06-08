@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import { Resend } from 'resend'
 import { db } from './db.js'
+import { requireAuth, checkPassword, issueToken, authConfigured } from './auth.js'
 
 const app = express()
 app.use(cors())
@@ -29,14 +30,27 @@ const wrap = (fn) => (req, res) =>
     res.status(500).json({ error: err.message || 'Server error' })
   })
 
+// ── Admin login ──
+// Verifies the password against the bcrypt hash and returns a signed session
+// token. The token must be sent as `Authorization: Bearer <token>` on every
+// route that changes data (see requireAuth below). Reads stay public.
+app.post('/api/login', wrap(async (req, res) => {
+  if (!authConfigured()) {
+    return res.status(503).json({ error: 'Admin login is not configured on the server.' })
+  }
+  const ok = await checkPassword((req.body || {}).password)
+  if (!ok) return res.status(401).json({ error: 'Incorrect password.' })
+  res.json({ token: issueToken() })
+}))
+
 // ── Members CRUD ──
 app.get('/api/members', wrap(async (req, res) => res.json(await db.listMembers())))
-app.post('/api/members', wrap(async (req, res) => res.status(201).json(await db.addMember(req.body || {}))))
-app.put('/api/members/:id', wrap(async (req, res) => {
+app.post('/api/members', requireAuth, wrap(async (req, res) => res.status(201).json(await db.addMember(req.body || {}))))
+app.put('/api/members/:id', requireAuth, wrap(async (req, res) => {
   const updated = await db.updateMember(req.params.id, req.body || {})
   return updated ? res.json(updated) : res.status(404).json({ error: 'Member not found' })
 }))
-app.delete('/api/members/:id', wrap(async (req, res) => {
+app.delete('/api/members/:id', requireAuth, wrap(async (req, res) => {
   const { id } = req.params
   const members = await db.listMembers()
   const target = members.find((m) => String(m.id) === String(id))
@@ -62,12 +76,12 @@ app.delete('/api/members/:id', wrap(async (req, res) => {
 
 // ── Events CRUD ──
 app.get('/api/events', wrap(async (req, res) => res.json(await db.listEvents())))
-app.post('/api/events', wrap(async (req, res) => res.status(201).json(await db.addEvent(req.body || {}))))
-app.put('/api/events/:id', wrap(async (req, res) => {
+app.post('/api/events', requireAuth, wrap(async (req, res) => res.status(201).json(await db.addEvent(req.body || {}))))
+app.put('/api/events/:id', requireAuth, wrap(async (req, res) => {
   const updated = await db.updateEvent(req.params.id, req.body || {})
   return updated ? res.json(updated) : res.status(404).json({ error: 'Event not found' })
 }))
-app.delete('/api/events/:id', wrap(async (req, res) => {
+app.delete('/api/events/:id', requireAuth, wrap(async (req, res) => {
   const ok = await db.removeEvent(req.params.id)
   return ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Event not found' })
 }))
@@ -75,10 +89,10 @@ app.delete('/api/events/:id', wrap(async (req, res) => {
 // ── Event media: direct-to-Storage uploads ──
 // The browser asks for a signed URL, uploads the file straight to Supabase
 // Storage (no serverless size cap), then saves the returned URL on the event.
-app.post('/api/event-media/upload-url', wrap(async (req, res) =>
+app.post('/api/event-media/upload-url', requireAuth, wrap(async (req, res) =>
   res.json(await db.createMediaUploadUrl((req.body || {}).name)),
 ))
-app.post('/api/event-media/delete', wrap(async (req, res) => {
+app.post('/api/event-media/delete', requireAuth, wrap(async (req, res) => {
   await db.removeMediaObject((req.body || {}).path)
   res.json({ ok: true })
 }))
@@ -87,16 +101,16 @@ app.post('/api/event-media/delete', wrap(async (req, res) => {
 app.get('/api/content/:key', wrap(async (req, res) =>
   res.json(await db.getContent(req.params.key)),
 ))
-app.put('/api/content/:key', wrap(async (req, res) =>
+app.put('/api/content/:key', requireAuth, wrap(async (req, res) =>
   res.json(await db.setContent(req.params.key, req.body || {})),
 ))
-app.delete('/api/content/:key', wrap(async (req, res) => {
+app.delete('/api/content/:key', requireAuth, wrap(async (req, res) => {
   const ok = await db.removeContent(req.params.key)
   return ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' })
 }))
 
 // ── Broadcast an event announcement by email and/or SMS to all members ──
-app.post('/api/broadcast-event', wrap(async (req, res) => {
+app.post('/api/broadcast-event', requireAuth, wrap(async (req, res) => {
   const { event = {}, message = '', channels = {} } = req.body || {}
   if (!channels.email && !channels.sms) {
     return res.status(400).json({ error: 'Pick at least one channel (email or SMS).' })
@@ -228,7 +242,7 @@ function formatEventDate(iso) {
 }
 
 // Sends a birthday email to every provided recipient that has an address.
-app.post('/api/notify-birthdays', async (req, res) => {
+app.post('/api/notify-birthdays', requireAuth, async (req, res) => {
   const { recipients = [], month = '' } = req.body || {}
   const valid = recipients.filter((r) => r && r.email && r.firstName)
 

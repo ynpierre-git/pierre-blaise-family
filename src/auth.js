@@ -1,26 +1,46 @@
-// ⚠️ Client-side only — NOT real security.
-// Credentials live in the browser (localStorage) and are visible to anyone
-// who opens dev tools. This only gates the UI. Replace with a real backend
-// (hashed passwords, server sessions) before trusting it with anything.
+// Token-based admin auth. The password is verified on the SERVER (against a
+// bcrypt hash kept in an env var); the browser only ever holds a short-lived
+// signed token. Viewing the site needs nothing — only changes require the token,
+// which the server enforces on every write. This is real security now, not just
+// a UI gate.
 
-const STORAGE_KEY = 'pbfam_credentials'
-const DEFAULTS = { username: 'pbfam', password: 'password123' }
+const API = import.meta.env.VITE_API_URL || ''
+const TOKEN_KEY = 'pbfam_token'
 
-export function getCredentials() {
+export function getToken() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return { ...DEFAULTS, ...JSON.parse(raw) }
+    return sessionStorage.getItem(TOKEN_KEY) || ''
   } catch {
-    /* ignore malformed storage */
+    return ''
   }
-  return { ...DEFAULTS }
 }
 
-export function setCredentials(next) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+export function isAuthed() {
+  return Boolean(getToken())
 }
 
-export function verify(username, password) {
-  const c = getCredentials()
-  return username === c.username && password === c.password
+export function logout() {
+  try {
+    sessionStorage.removeItem(TOKEN_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+
+// Exchanges the admin password for a session token. Throws with a friendly
+// message on failure.
+export async function login(password) {
+  const res = await fetch(`${API}/api/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || 'Sign-in failed. Please try again.')
+  try {
+    sessionStorage.setItem(TOKEN_KEY, data.token)
+  } catch {
+    /* ignore */
+  }
+  return true
 }

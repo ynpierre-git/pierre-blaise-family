@@ -1,17 +1,27 @@
 import { useState } from 'react'
-import { verify } from '../auth.js'
+import { login } from '../auth.js'
 
-// Compact sign-in dialog used to gate admin actions (add/edit) on pages that are
-// otherwise open to everyone. Calls onSuccess() when the credentials check out.
+// Compact sign-in dialog used to gate admin actions on pages that are otherwise
+// open to everyone. Verifies the password with the server and stores a session
+// token, then calls onSuccess().
 export default function LoginModal({ title = '🔒 Sign in', onSuccess, onCancel }) {
-  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
-    if (verify(username.trim(), password)) onSuccess()
-    else setError('Incorrect username or password.')
+    if (busy) return
+    setBusy(true)
+    setError('')
+    try {
+      await login(password)
+      onSuccess()
+    } catch (err) {
+      setError(err.message || 'Incorrect password.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -28,21 +38,13 @@ export default function LoginModal({ title = '🔒 Sign in', onSuccess, onCancel
         </div>
         <form className="modal-body" onSubmit={submit}>
           <label className="field">
-            <span>Username</span>
-            <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-              autoFocus
-            />
-          </label>
-          <label className="field">
             <span>Password</span>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
+              autoFocus
             />
           </label>
           {error && <p className="login-error">{error}</p>}
@@ -51,8 +53,8 @@ export default function LoginModal({ title = '🔒 Sign in', onSuccess, onCancel
             <button type="button" className="btn-ghost" onClick={onCancel}>
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
-              Sign In
+            <button type="submit" className="btn-primary" disabled={busy}>
+              {busy ? 'Signing in…' : 'Sign In'}
             </button>
           </div>
         </form>

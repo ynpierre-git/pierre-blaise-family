@@ -1,18 +1,23 @@
 import { useState } from 'react'
-import { verify } from '../auth.js'
+import { login } from '../auth.js'
 
 export default function Login({ onLogin }) {
-  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
-    if (verify(username.trim(), password)) {
-      setError('')
+    if (busy) return
+    setBusy(true)
+    setError('')
+    try {
+      await login(password)
       onLogin()
-    } else {
-      setError('Incorrect username or password.')
+    } catch (err) {
+      setError(err.message || 'Incorrect password.')
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -21,17 +26,7 @@ export default function Login({ onLogin }) {
       <form className="card login-card" onSubmit={submit}>
         <div className="login-badge" aria-hidden="true">🔒</div>
         <h2 className="login-title">Admin Access</h2>
-        <p className="login-sub">Sign in to manage demographic records.</p>
-
-        <label className="field">
-          <span>Username</span>
-          <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            autoFocus
-          />
-        </label>
+        <p className="login-sub">Enter the admin password to manage records.</p>
 
         <label className="field">
           <span>Password</span>
@@ -40,13 +35,14 @@ export default function Login({ onLogin }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
+            autoFocus
           />
         </label>
 
         {error && <p className="login-error">{error}</p>}
 
-        <button type="submit" className="btn-primary">
-          Sign In
+        <button type="submit" className="btn-primary" disabled={busy}>
+          {busy ? 'Signing in…' : 'Sign In'}
         </button>
       </form>
     </section>

@@ -1,12 +1,22 @@
 // Thin client for the backend REST API. In dev, Vite proxies /api → :3001.
+import { getToken, logout } from './auth.js'
+
 const API = import.meta.env.VITE_API_URL || ''
 
 async function request(method, path, body) {
+  const token = getToken()
   const res = await fetch(`${API}${path}`, {
     method,
-    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    headers: {
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: body ? JSON.stringify(body) : undefined,
   })
+  if (res.status === 401) {
+    logout() // token missing/expired — drop it so the UI shows signed-out
+    throw new Error('Your session has expired. Please sign in again.')
+  }
   if (!res.ok) {
     const detail = await res.json().catch(() => ({}))
     throw new Error(detail.error || `Request failed (${res.status})`)

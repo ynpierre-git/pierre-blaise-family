@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Avatar from './Avatar.jsx'
+import LoginModal from './LoginModal.jsx'
 import { membersApi } from '../api.js'
+import { getToken } from '../auth.js'
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -9,13 +11,14 @@ const MONTHS = [
 
 const API = import.meta.env.VITE_API_URL || ''
 
-export default function Birthdays() {
+export default function Birthdays({ authed = false, onLogin }) {
   const now = new Date()
   const currentMonth = now.getMonth() // 0-indexed
   const monthName = MONTHS[currentMonth]
   const [members, setMembers] = useState(null) // null = loading
   const [status, setStatus] = useState(null) // { type, text }
   const [sending, setSending] = useState(false)
+  const [pending, setPending] = useState(null) // recipients awaiting sign-in
 
   useEffect(() => {
     let live = true
@@ -34,6 +37,13 @@ export default function Birthdays() {
 
   const withEmail = birthdaysThisMonth.filter((m) => hasEmail(m))
 
+  // Sending birthday emails is an admin action — sign in first if needed.
+  const requestSend = (recipients) => {
+    if (!recipients.length || sending) return
+    if (authed) return send(recipients)
+    setPending(recipients)
+  }
+
   const send = async (members) => {
     if (!members.length || sending) return
     setSending(true)
@@ -45,9 +55,13 @@ export default function Birthdays() {
       birthday: m.birthday,
     }))
     try {
+      const token = getToken()
       const res = await fetch(`${API}/api/notify-birthdays`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ recipients, month: monthName }),
       })
       const data = await res.json().catch(() => ({}))
@@ -94,7 +108,7 @@ export default function Birthdays() {
           <button
             type="button"
             className="btn-primary btn-add"
-            onClick={() => send(withEmail)}
+            onClick={() => requestSend(withEmail)}
             disabled={!withEmail.length || sending}
             title={
               withEmail.length
@@ -102,7 +116,7 @@ export default function Birthdays() {
                 : 'No one this month has an email on file'
             }
           >
-            {sending ? 'Sending…' : '✉ Send Birthday Wishes'}
+            {sending ? 'Sending…' : authed ? '✉ Send Birthday Wishes' : '🔒 Send Birthday Wishes'}
           </button>
         )}
       </div>
@@ -137,10 +151,10 @@ export default function Birthdays() {
                   <button
                     type="button"
                     className="bday-notify"
-                    onClick={() => send([m])}
+                    onClick={() => requestSend([m])}
                     disabled={sending}
                   >
-                    ✉ Notify
+                    {authed ? '✉ Notify' : '🔒 Notify'}
                   </button>
                 ) : (
                   <span className="bday-noemail">No email on file</span>
@@ -150,6 +164,19 @@ export default function Birthdays() {
             </li>
           ))}
         </ul>
+      )}
+
+      {pending && (
+        <LoginModal
+          title="🔒 Sign in to send birthday emails"
+          onSuccess={() => {
+            onLogin?.()
+            const recipients = pending
+            setPending(null)
+            send(recipients)
+          }}
+          onCancel={() => setPending(null)}
+        />
       )}
     </section>
   )

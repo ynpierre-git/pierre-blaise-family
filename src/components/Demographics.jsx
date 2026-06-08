@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import Avatar from './Avatar.jsx'
-import ChangeCredentials from './ChangeCredentials.jsx'
-import { getCredentials } from '../auth.js'
 import { membersApi, fileToDataUrl } from '../api.js'
 
 const EMPTY = {
@@ -60,8 +58,6 @@ export default function Demographics({ onLogout }) {
   const [editingId, setEditingId] = useState(null)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
-  const [showAccount, setShowAccount] = useState(false)
-  const [username, setUsername] = useState(() => getCredentials().username)
   const [actionError, setActionError] = useState('')
   // Birthday is edited as separate month / day / year parts (year optional).
   const [bday, setBdayState] = useState({ y: '', m: '', d: '' })
@@ -237,12 +233,9 @@ export default function Demographics({ onLogout }) {
     <section className="section">
       <div className="admin-bar">
         <span className="admin-status">
-          🔒 Signed in as <strong>{username}</strong>
+          🔒 Signed in as <strong>Admin</strong>
         </span>
         <div className="admin-actions">
-          <button type="button" className="btn-ghost" onClick={() => setShowAccount(true)}>
-            Change login
-          </button>
           <button type="button" className="btn-ghost" onClick={onLogout}>
             Log out
           </button>
@@ -659,12 +652,6 @@ export default function Demographics({ onLogout }) {
         </div>
       )}
 
-      {showAccount && (
-        <ChangeCredentials
-          onClose={() => setShowAccount(false)}
-          onChanged={() => setUsername(getCredentials().username)}
-        />
-      )}
     </section>
   )
 }

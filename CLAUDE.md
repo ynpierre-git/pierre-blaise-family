@@ -34,7 +34,7 @@ Environment: Windows + PowerShell. `.env` files exist but are placeholders — S
 Single-page app. `App.jsx` owns the active-tab state and renders one of four tabs: **Demographics** (admin), **Family Tree**, **Events**, **Birthdays**. The app intentionally lands on the `tree` tab so visitors see content, not the login.
 
 - `src/api.js` — the only thing that talks to the backend. `membersApi` / `eventsApi` (CRUD) and `fileToDataUrl`. Base URL is `import.meta.env.VITE_API_URL || ''` (empty → use the Vite proxy).
-- `src/auth.js` — credential storage. **Client-side only; not real security** (creds live in `localStorage`, default `pbfam` / `password123`, changeable in-app). Only the Demographics tab is gated; the authed flag lives in `sessionStorage`. Do not treat this as a real auth boundary.
+- `src/auth.js` — token-based admin auth. `login(password)` POSTs to `/api/login`, which verifies the password server-side against a **bcrypt hash** (env var `ADMIN_PASSWORD_HASH`) and returns a signed session token; the token lives in `sessionStorage` and is sent as `Authorization: Bearer …` on every write (see `src/api.js`). **Reads are public; all mutations are enforced on the server** by `requireAuth` (`server/auth.js`). Required env vars: `ADMIN_PASSWORD_HASH` + `AUTH_SECRET` (generate both with `node server/scripts/make-admin-credentials.mjs "<pw>"`); if unset the server fails closed (login + writes → 503). No username, no in-app password change — the password *is* the env-var hash.
 - `src/components/Avatar.jsx` — renders a person's photo, or a silhouette SVG fallback when there's no photo.
 - `src/data/placeholder.js` — now essentially empty (`familyTree = null`); the tree is built from the database, not this file.
 

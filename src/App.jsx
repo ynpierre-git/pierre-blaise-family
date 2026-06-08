@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import { isAuthed, logout as authLogout } from './auth.js'
 import Demographics from './components/Demographics.jsx'
 import FamilyTree from './components/FamilyTree.jsx'
 import WhoIs from './components/WhoIs.jsx'
@@ -19,16 +20,12 @@ const TABS = [
 
 export default function App() {
   const [active, setActive] = useState('tree')
-  const [authed, setAuthed] = useState(
-    () => sessionStorage.getItem('pbfam_authed') === '1',
-  )
+  const [authed, setAuthed] = useState(() => isAuthed())
 
-  const login = () => {
-    sessionStorage.setItem('pbfam_authed', '1')
-    setAuthed(true)
-  }
+  // Called after a successful server login (the token is already stored).
+  const login = () => setAuthed(true)
   const logout = () => {
-    sessionStorage.removeItem('pbfam_authed')
+    authLogout()
     setAuthed(false)
   }
 
@@ -86,7 +83,7 @@ export default function App() {
         {active === 'whois' && <WhoIs />}
         {active === 'jmpierre' && <JeanMariePierre authed={authed} onLogin={login} />}
         {active === 'events' && <Events authed={authed} onLogin={login} />}
-        {active === 'birthdays' && <Birthdays />}
+        {active === 'birthdays' && <Birthdays authed={authed} onLogin={login} />}
       </main>
 
       <footer className="footer">
