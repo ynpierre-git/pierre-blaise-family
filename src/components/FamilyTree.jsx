@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { membersApi } from '../api.js'
+import { downloadGedcom } from '../lib/gedcom.js'
 
 const GENERATION_LABELS = [
   'First Generation',
@@ -82,6 +84,17 @@ export default function FamilyTree() {
   const expandAll = () => setCollapsed(new Set())
   const collapseAll = () => setCollapsed(new Set(collapsibleKeys))
 
+  // Print the whole tree: expand every branch first so nothing is clipped.
+  // flushSync applies the expansion to the DOM synchronously so window.print()
+  // still runs inside the click's user-gesture context (a deferred print via
+  // setTimeout is silently ignored by some browsers).
+  const printTree = () => {
+    flushSync(() => setCollapsed(new Set()))
+    window.print()
+  }
+
+  const exportGedcom = () => downloadGedcom(members || [])
+
   const loading = members === null
   const isEmpty = !loading && roots.length === 0
 
@@ -99,6 +112,12 @@ export default function FamilyTree() {
               </button>
               <button type="button" className="btn-ghost" onClick={collapseAll}>
                 Collapse all
+              </button>
+              <button type="button" className="btn-ghost" onClick={printTree}>
+                🖨 Print / PDF
+              </button>
+              <button type="button" className="btn-ghost" onClick={exportGedcom}>
+                ⬇ GEDCOM
               </button>
             </>
           )}

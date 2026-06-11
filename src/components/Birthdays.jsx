@@ -99,11 +99,9 @@ export default function Birthdays({ authed = false, onLogin }) {
 
   return (
     <section className="section">
-      <div className="section-head section-head-row">
-        <div>
-          <h2 className="section-title">Birthdays in {monthName}</h2>
-          <p className="section-sub">Celebrating the family this month.</p>
-        </div>
+      <div className="section-head section-head-center">
+        <h2 className="section-title">Birthdays in {monthName}</h2>
+        <p className="section-sub">Celebrating the family this month.</p>
         {birthdaysThisMonth.length > 0 && (
           <button
             type="button"

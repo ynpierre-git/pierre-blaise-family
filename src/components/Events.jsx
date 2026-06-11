@@ -241,11 +241,9 @@ export default function Events({ authed = false, onLogin }) {
 
   return (
     <section className="section">
-      <div className="section-head section-head-row">
-        <div>
-          <h2 className="section-title">Family Events</h2>
-          <p className="section-sub">Gatherings, milestones, and moments to remember.</p>
-        </div>
+      <div className="section-head section-head-center">
+        <h2 className="section-title">Family Events</h2>
+        <p className="section-sub">Gatherings, milestones, and moments to remember.</p>
         <button
           type="button"
           className="btn-primary btn-add"

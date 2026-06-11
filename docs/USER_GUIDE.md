@@ -12,6 +12,11 @@ for both regular visitors and family administrators.
 - [Getting started](#getting-started)
 - [Family Tree](#family-tree)
   - [Searching for a person](#searching-for-a-person)
+  - [Printing or saving the tree as a PDF](#printing-or-saving-the-tree-as-a-pdf)
+  - [Exporting the family (GEDCOM)](#exporting-the-family-gedcom)
+- [Who is?](#who-is)
+  - [Sharing a person's profile](#sharing-a-persons-profile)
+- [How are we related?](#how-are-we-related)
 - [Jean-Marie Pierre (About)](#jean-marie-pierre-about)
 - [Events](#events)
   - [Viewing photos & videos](#viewing-photos--videos)
@@ -36,12 +41,14 @@ Jean-Marie Pierre, who gathered our family's history.
 
 ![Home page](screenshots/01-home.png)
 
-The five tabs are:
+The tabs are:
 
 | Tab | What it's for |
 |-----|----------------|
 | **Demographics** | Admin area to add/edit family members (🔒 sign-in required) |
 | **Family Tree** | The family lineage, built automatically |
+| **Who is?** | Look up one person — full details, immediate family, and their line to the root |
+| **How Related?** | Pick two people and see exactly how they're related |
 | **Events** | Gatherings, photos, and videos |
 | **Birthdays** | Whose birthday is this month |
 | **Jean-Marie Pierre** | A tribute to our family historian |
@@ -76,6 +83,75 @@ unrelated is hidden.
 - A count under the tree tells you how many people matched, e.g.
   *"2 matches for 'pierre'"*.
 - Click the **✕** in the search box to clear it and return to the full tree.
+
+### Printing or saving the tree as a PDF
+
+Use the **🖨 Print / PDF** button (top of the Family Tree) to make a paper copy
+or a PDF of the whole tree:
+
+1. Click **🖨 Print / PDF**. Every branch is opened automatically first so
+   nothing is left hidden, then your browser's print window appears.
+2. To save a file instead of printing, set **Destination** (or "Printer") to
+   **Save as PDF**.
+3. For a wide tree, choose **Landscape** and let it scale to fit the page.
+
+> 💡 Printing works best in a full web browser (Chrome, Edge, Safari, Firefox).
+
+### Exporting the family (GEDCOM)
+
+The **⬇ GEDCOM** button downloads the whole family as a `.ged` file — the
+standard genealogy format. You can:
+
+- Import it into genealogy programs and sites such as **Ancestry**, **Gramps**,
+  or **Family Tree Maker**.
+- Keep it as a portable **backup** of the family's information.
+
+The file includes each person's name, sex, birth and (where recorded) death
+dates and places, notes, and all the parent/child and spouse links.
+
+---
+
+## Who is?
+
+The **Who is?** tab is a quick lookup for a single family member.
+
+1. Type a name in the search box and pick the person from the list.
+2. Their profile opens with:
+   - A large **photo** and their full **details** (born, where they were born,
+     branch, marital status, contact info, and — for those who have passed — the
+     date of passing).
+   - **Immediate family** — parents, spouse/partner, and children. Each name is
+     a link, so you can hop straight to that person's profile.
+   - **Line to the family root** — the direct chain of ancestors all the way back
+     to the start of the family.
+
+### Sharing a person's profile
+
+On any profile you'll find two buttons:
+
+- **🔗 Copy link** — copies a web address that points straight to that person.
+  Paste it into a text, email, or chat; when someone opens it, the site goes
+  directly to that person's profile. (On the live site the link starts with
+  `https://www.pierreblaisefamily.com/…`.)
+- **🖨 Print / Save PDF** — print the profile or save it as a PDF, the same way
+  as the family tree.
+
+---
+
+## How are we related?
+
+The **How Related?** tab answers the classic family-reunion question.
+
+1. Choose a **first person** and a **second person** using the two search boxes
+   (use the **⇄** button to swap them).
+2. The site tells you exactly how the first person is related to the second —
+   for example *"Marie is John's first cousin once removed."*
+
+It understands parents and children, grandparents, siblings, aunts/uncles and
+nieces/nephews, cousins (with the correct "Nth cousin, M times removed"),
+spouses/partners, and in-law (by-marriage) connections. When two people share a
+blood ancestor, it also shows the **shared ancestor** and each person's line up
+to them, so you can see *why* they're related.
 
 ---
 
@@ -136,7 +212,7 @@ for the credentials.
 ### Signing in
 
 Open the **Demographics** tab. You'll see the Admin Access sign-in. Enter the
-username and password, then **Sign In**.
+admin password, then **Sign In**. (There's no username — just the password.)
 
 ![Admin sign-in](screenshots/06-login.png)
 
@@ -145,19 +221,24 @@ Events, and Birthdays never requires signing in — only changes do.)
 
 ### Managing family members
 
-After signing in, the **Demographics** tab shows the **Family Roster** and an
-**Add Member** button. Use **Change login** to update the admin username/password,
-or **Log out** when you're done.
+After signing in, the **Demographics** tab shows the **Family Roster**, a
+**search box** to find anyone quickly, and an **Add Member** button. Click
+**Log out** when you're done.
 
 ![Demographics admin view](screenshots/07-demographics.png)
 
 Click **＋ Add Member** to open the form. Fill in the details and **upload a
 photo** if you have one. Notable fields:
 
+- **Birthday** — entered as month / day / year. The **year is optional** — the
+  month and day alone are enough to save (handy when a birth year isn't known).
 - **Email** — used for birthday and event email announcements.
 - **Phone (for text alerts)** — used for text/SMS announcements. Enter it in
   international format, e.g. `+1 555 123 4567`.
 - **Marital status** of *Married* or *Partnered* requires choosing a **spouse**.
+- **Deceased** — tick *"This person is deceased"* at the bottom of the form to
+  record a **date of death** (also optional). On the tree and profiles this shows
+  as a small **†**, and the *Who is?* page notes *"Departed this life on …"*.
 
 ![Add a family member](screenshots/08-member-form.png)
 

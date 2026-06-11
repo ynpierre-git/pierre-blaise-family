@@ -7,11 +7,12 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ]
 
-export default function WhoIs() {
+export default function WhoIs({ initialId = null }) {
   const [members, setMembers] = useState(null) // null = loading
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
-  const [selectedId, setSelectedId] = useState(null)
+  const [selectedId, setSelectedId] = useState(initialId ? String(initialId) : null)
+  const [copied, setCopied] = useState(false)
 
   const load = () => {
     setError('')
@@ -43,6 +44,30 @@ export default function WhoIs() {
   const select = (id) => {
     setSelectedId(String(id))
     setQuery('')
+    setCopied(false)
+  }
+
+  // Keep the URL in sync with the selected person so it can be shared/bookmarked.
+  useEffect(() => {
+    if (selectedId) {
+      const target = `#/who/${encodeURIComponent(selectedId)}`
+      if (window.location.hash !== target) {
+        window.history.replaceState(null, '', target)
+      }
+    }
+  }, [selectedId])
+
+  const copyLink = async () => {
+    if (!selectedId) return
+    const url = `${window.location.origin}${window.location.pathname}#/who/${encodeURIComponent(selectedId)}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    } catch {
+      // Clipboard blocked (e.g. insecure context) — show the URL so it can be copied by hand.
+      window.prompt('Copy this link to share the profile:', url)
+    }
   }
 
   const children = useMemo(() => {
@@ -76,7 +101,7 @@ export default function WhoIs() {
 
   return (
     <section className="section">
-      <div className="section-head">
+      <div className="section-head section-head-center">
         <h2 className="section-title">Who is…?</h2>
         <p className="section-sub">
           Search for anyone to see their details, their immediate family, and
@@ -155,6 +180,19 @@ export default function WhoIs() {
                   {selected.gender && (
                     <p className="whois-gender">{selected.gender}</p>
                   )}
+
+                  <div className="whois-actions">
+                    <button type="button" className="btn-ghost whois-action" onClick={copyLink}>
+                      {copied ? '✓ Link copied' : '🔗 Copy link'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-ghost whois-action"
+                      onClick={() => window.print()}
+                    >
+                      🖨 Print / Save PDF
+                    </button>
+                  </div>
 
                   <dl className="whois-facts">
                   <Fact label="Marital status">

@@ -107,7 +107,10 @@
 }
 
 .eyebrow {
-  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 0.72rem;
   letter-spacing: 0.42em;
   text-transform: uppercase;
   color: var(--ochre);
@@ -115,35 +118,46 @@
   margin-bottom: 1rem;
 }
 
+.eyebrow::before,
+.eyebrow::after {
+  content: '';
+  width: clamp(1.5rem, 6vw, 3.2rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ochre-soft), transparent);
+}
+
 .title {
   font-family: var(--font-display);
   font-weight: 600;
-  line-height: 0.94;
-  font-size: clamp(2.8rem, 9vw, 5.6rem);
+  line-height: 1.05;
+  font-size: clamp(1.6rem, 5vw, 3rem);
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .title-line {
-  display: block;
+  display: inline;
 }
 
 .title-accent {
   font-style: italic;
   font-weight: 400;
   color: var(--forest);
+  margin-left: 0.35em;
 }
 
 .lede {
-  max-width: 38rem;
+  max-width: none;
   margin: 1.5rem auto 0;
   color: var(--ink);
-  font-size: clamp(1.25rem, 3vw, 1.55rem);
+  font-size: clamp(1rem, 2.4vw, 1.4rem);
   font-weight: 500;
   line-height: 1.5;
+  white-space: nowrap;
 }
 
 .roots {
-  margin: 1rem auto 0;
+  margin: 0.3rem auto 0;
   color: var(--forest);
   font-size: clamp(1.12rem, 2.6vw, 1.35rem);
   font-style: italic;
@@ -165,7 +179,7 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
   color: var(--ink);
-  font-size: clamp(1.18rem, 2.6vw, 1.4rem);
+  font-size: clamp(0.9rem, 1.8vw, 1.02rem);
   font-weight: normal;
   font-style: italic;
   line-height: 1.6;
@@ -187,16 +201,18 @@
 /* ===== Tabs ===== */
 .tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin: 0 auto 2.5rem;
-  padding: 0.4rem;
-  background: rgba(251, 246, 236, 0.7);
+  padding: 0.35rem;
+  background: linear-gradient(rgba(253, 248, 236, 0.85), rgba(247, 240, 224, 0.78));
   border: 1px solid var(--line);
   border-radius: 999px;
   width: fit-content;
-  backdrop-filter: blur(6px);
+  max-width: 100%;
+  overflow-x: auto;
+  backdrop-filter: blur(7px);
   box-shadow: var(--shadow-soft);
   animation: rise 0.8s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -206,25 +222,29 @@
   flex-direction: column;
   align-items: center;
   gap: 0.1rem;
+  flex: none;
   border: none;
   background: transparent;
   border-radius: 999px;
-  padding: 0.65rem 1.5rem;
+  padding: 0.6rem 1rem;
   color: var(--ink-soft);
-  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: color 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .tab-hint {
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   opacity: 0.7;
+  white-space: nowrap;
 }
 
 .tab-label {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .tab:hover {
@@ -339,9 +359,9 @@
 .field select:focus,
 .field textarea:focus {
   outline: none;
-  border-color: var(--forest);
+  border-color: var(--cobalt);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(47, 74, 60, 0.12);
+  box-shadow: 0 0 0 3px rgba(29, 93, 115, 0.16);
 }
 
 .field-hint {
@@ -403,22 +423,26 @@
   margin-top: 0.5rem;
   width: 100%;
   border: none;
-  background: var(--ochre);
+  background: linear-gradient(170deg, #c97433 0%, var(--ochre) 55%, #a85a22 100%);
   color: #fff7ec;
   font-family: var(--font-display);
   font-size: 1.02rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   padding: 0.85rem;
-  border-radius: 10px;
-  transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 6px 16px rgba(189, 115, 51, 0.28);
+  border-radius: var(--radius-sm);
+  transition: transform 0.15s, filter 0.2s, box-shadow 0.2s;
+  box-shadow:
+    0 1px 0 rgba(255, 240, 220, 0.45) inset,
+    0 6px 16px rgba(168, 90, 34, 0.3);
 }
 
 .btn-primary:hover {
-  background: #a8631f;
+  filter: brightness(1.06);
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(189, 115, 51, 0.34);
+  box-shadow:
+    0 1px 0 rgba(255, 240, 220, 0.5) inset,
+    0 12px 26px rgba(168, 90, 34, 0.38);
 }
 
 .btn-primary:active {
@@ -538,6 +562,19 @@
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 1.05rem;
+}
+
+/* No-photo avatar: a light parchment disc so the dark-skin person emoji reads
+   clearly (the default forest gradient would swallow it). */
+.avatar-fallback {
+  background: radial-gradient(circle at 50% 36%, #fdf8ec, #e7d9ba);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+
+.avatar-emoji {
+  font-size: 1.6em;
+  line-height: 1;
 }
 
 .roster-photo {
@@ -1104,6 +1141,12 @@
   font-size: 2rem;
 }
 
+.avatar-md {
+  width: 44px;
+  height: 44px;
+  font-size: 1.05rem;
+}
+
 .avatar-sm {
   width: 34px;
   height: 34px;
@@ -1128,21 +1171,24 @@
 
 .btn-ghost {
   display: inline-block;
-  background: var(--parchment);
+  background: var(--card-raised);
   border: 1px solid var(--forest);
   color: var(--forest);
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   padding: 0.5rem 0.95rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 1px 2px rgba(34, 28, 18, 0.06);
 }
 
 .btn-ghost:hover {
   background: var(--forest);
-  color: var(--parchment);
+  color: #f6efdd;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(24, 46, 35, 0.22);
 }
 
 .btn-link {
@@ -1472,6 +1518,35 @@
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+/* Centered section header: title, subtitle, and any action stacked & centered. */
+.section-head-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+}
+
+/* A small engraved flourish beneath centered titles — a hairline with a
+   diamond, evoking an heirloom certificate. */
+.section-head-center .section-title {
+  position: relative;
+  padding-bottom: 0.7rem;
+}
+
+.section-head-center .section-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 9px;
+  background:
+    linear-gradient(var(--ochre), var(--ochre)) center/100% 1.5px no-repeat,
+    radial-gradient(circle, var(--cobalt) 0 3px, transparent 3.5px) center/9px 9px no-repeat;
 }
 
 .btn-add {
@@ -2578,5 +2653,260 @@
   }
   .whois-main-info .whois-facts {
     text-align: left;
+  }
+}
+
+/* ===== Who is? — profile actions (share / print) ===== */
+.whois-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.85rem 0 0.4rem;
+}
+
+.whois-action {
+  font-size: 0.82rem;
+  padding: 0.4rem 0.8rem;
+}
+
+/* ===== How Related? ===== */
+.relate-pickers {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.relate-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.relate-picker-label {
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--forest-deep);
+  font-weight: 800;
+}
+
+.relate-swap {
+  align-self: center;
+  margin-top: 1.5rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: 1px solid var(--forest);
+  background: var(--card);
+  color: var(--forest-deep);
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.relate-swap:hover:not(:disabled) {
+  background: var(--forest);
+  color: var(--parchment);
+  transform: rotate(180deg);
+}
+
+.relate-swap:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.relate-chosen {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.relate-chosen-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.relate-chosen-name {
+  font-weight: 600;
+  color: var(--forest-deep);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relate-chosen-meta {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.relate-change {
+  flex: none;
+  border: none;
+  background: none;
+  color: var(--ochre);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.relate-result {
+  padding: 1.6rem;
+  text-align: center;
+}
+
+.relate-badge {
+  display: inline-block;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(47, 74, 60, 0.12);
+  color: var(--forest-deep);
+  text-transform: capitalize;
+}
+
+.relate-badge-spouse {
+  background: rgba(122, 51, 56, 0.12);
+  color: var(--burgundy);
+}
+
+.relate-badge-marriage {
+  background: rgba(189, 115, 51, 0.14);
+  color: var(--ochre);
+}
+
+.relate-headline {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--forest-deep);
+  margin: 0.8rem 0 0;
+  line-height: 1.35;
+}
+
+.relate-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.relate-lines {
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+
+.relate-lines-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ochre);
+  margin: 0 0 0.9rem;
+  text-align: center;
+}
+
+.relate-ladders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem;
+}
+
+.relate-ladder-head {
+  font-weight: 700;
+  color: var(--forest-deep);
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+}
+
+.relate-ladder-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.relate-ladder-step {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  background: rgba(47, 74, 60, 0.05);
+}
+
+.relate-ladder-step.is-ancestor {
+  background: rgba(189, 115, 51, 0.14);
+  font-weight: 600;
+}
+
+.relate-ladder-name {
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .relate-pickers {
+    grid-template-columns: 1fr;
+  }
+  .relate-swap {
+    margin-top: 0;
+    justify-self: center;
+  }
+  .relate-ladders {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Print / Save-as-PDF (family tree & profiles) ===== */
+@media print {
+  body {
+    background: #fff;
+    background-image: none;
+  }
+  .app {
+    max-width: none;
+    padding: 0;
+  }
+  .leaf-bg,
+  .tabs,
+  .footer,
+  .eyebrow,
+  .lede,
+  .thanks,
+  .ftree-controls,
+  .ftree-search,
+  .ftree-count,
+  .whois-actions,
+  .whois-search,
+  .relate-pickers {
+    display: none !important;
+  }
+  .masthead {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .ftree-scroll {
+    overflow: visible !important;
+  }
+  .couple-card,
+  .chip,
+  .card {
+    box-shadow: none !important;
+  }
+  /* Avoid breaking a person or couple across pages. */
+  .ftree-node,
+  .couple-card,
+  .whois-card,
+  .bday-card {
+    break-inside: avoid;
   }
 }

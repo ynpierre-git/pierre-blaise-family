@@ -1,25 +1,38 @@
 :root {
-  /* Heritage palette — parchment, botanical green, warm ochre */
-  --parchment: #f3ead8;
-  --parchment-deep: #ebdfc7;
-  --ink: #2b2620;
-  --ink-soft: #5b5147;
-  --forest: #2f4a3c;
-  --forest-deep: #233a2f;
-  --ochre: #bd7333;
-  --ochre-soft: #d9a05b;
+  /* "Heirloom Archive" — a warm, letterpressed heritage palette: aged
+     parchment & botanical ink, with a Haitian cobalt accent and warm terracotta. */
+  --parchment: #f1e6cd;
+  --parchment-deep: #e7d9ba;
+  --ink: #221f17;
+  --ink-soft: #574d3e;
+  --forest: #2a4636;
+  --forest-deep: #182e23;
+  --ochre: #bb6429;
+  --ochre-soft: #d8995a;
+  --cobalt: #1d5d73;
+  --cobalt-soft: #3d8298;
   --burgundy: #7a3338;
-  --line: #cdbf9f;
-  --card: #fbf6ec;
+  --line: #cbb992;
+  --line-soft: #ddceac;
+  --card: #fbf4e3;
+  --card-raised: #fdf8ec;
 
-  --shadow-soft: 0 1px 2px rgba(43, 38, 32, 0.06), 0 8px 24px rgba(43, 38, 32, 0.08);
-  --shadow-lift: 0 2px 4px rgba(43, 38, 32, 0.08), 0 18px 40px rgba(43, 38, 32, 0.14);
+  /* Warm, layered shadows + a hairline top highlight for a pressed-paper feel. */
+  --shadow-soft:
+    0 1px 0 rgba(255, 252, 243, 0.6) inset,
+    0 1px 2px rgba(34, 28, 18, 0.05),
+    0 10px 26px rgba(34, 28, 18, 0.09);
+  --shadow-lift:
+    0 1px 0 rgba(255, 252, 243, 0.7) inset,
+    0 3px 6px rgba(34, 28, 18, 0.1),
+    0 22px 48px rgba(34, 28, 18, 0.16);
 
   --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-body: 'Spline Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  --radius: 14px;
-  --maxw: 1080px;
+  --radius: 13px;
+  --radius-sm: 9px;
+  --maxw: 1100px;
 }
 
 * {
@@ -37,20 +50,24 @@ body {
   font-family: var(--font-body);
   color: var(--ink);
   background-color: var(--parchment);
-  /* Layered atmosphere: warm vignette + grain, over a softened family photo.
-     The parchment wash keeps text/cards readable above the (dark) photo. */
+  /* Layered atmosphere: warm terracotta glow, a Haitian-cobalt wash, botanical
+     ink in the corner, fine grain — all over a softened family photo. The
+     parchment veil keeps text/cards readable above the (dark) photo. */
   background-image:
-    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(189, 115, 51, 0.10), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(47, 74, 60, 0.10), transparent 55%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
-    linear-gradient(rgba(243, 234, 216, 0.62), rgba(243, 234, 216, 0.73)),
+    radial-gradient(ellipse 95% 60% at 50% -12%, rgba(187, 100, 41, 0.13), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 2% 8%, rgba(29, 93, 115, 0.10), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(42, 70, 54, 0.12), transparent 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+    linear-gradient(rgba(241, 230, 205, 0.66), rgba(241, 230, 205, 0.78)),
     url("/family-bg.jpg");
-  background-size: auto, auto, 180px 180px, cover, contain;
-  background-position: center, center, center, center top;
-  background-repeat: no-repeat, no-repeat, repeat, no-repeat, no-repeat;
+  background-size: auto, auto, auto, 180px 180px, cover, contain;
+  background-position: center, center, center, center, center, center top;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat, no-repeat;
   background-attachment: fixed;
   min-height: 100vh;
   line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga' 1, 'kern' 1;
 }
 
 button {
