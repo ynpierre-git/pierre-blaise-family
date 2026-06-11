@@ -133,6 +133,21 @@
   font-size: clamp(1.6rem, 5vw, 3rem);
   letter-spacing: -0.02em;
   white-space: nowrap;
+  /* Carved 3D look: a deep-green face lifted off a warm, stacked extrusion
+     that fades into a soft grounding shadow — like engraved heirloom lettering. */
+  color: var(--forest-deep);
+  text-shadow:
+    0 1px 0 #fdf5de,
+    1px 1px 0 #d4c298,
+    2px 2px 0 #c8b689,
+    3px 3px 0 #bca97a,
+    4px 4px 0 #ae9b6b,
+    5px 5px 0 #9f8c5c,
+    6px 6px 0 #8f7c4d,
+    7px 7px 0 #7e6b3e,
+    8px 8px 0 #6c5930,
+    9px 9px 0 #594724,
+    11px 14px 22px rgba(30, 21, 8, 0.5);
 }
 
 .title-line {
