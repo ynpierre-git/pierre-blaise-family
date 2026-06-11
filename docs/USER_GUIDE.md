@@ -299,7 +299,9 @@ The Family Tree is rebuilt when you open it or press **Refresh**. Switch to the
 tab and refresh to see the latest.
 
 **Someone's photo is missing.**
-If a person has no photo, a simple silhouette is shown until one is uploaded.
+If a person has no photo yet, a friendly person emoji is shown in its place —
+chosen to match their **sex** (and using a skin tone that reflects our family).
+Upload a photo any time in the Demographics form to replace it.
 
 **Are the original full-size photos kept?**
 Yes. Galleries load smaller, fast versions for speed; the full-resolution files
