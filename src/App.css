@@ -2163,6 +2163,12 @@
   color: var(--ochre);
 }
 
+.footer-version {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
 .footer-link {
   color: var(--forest);
   font-weight: 600;

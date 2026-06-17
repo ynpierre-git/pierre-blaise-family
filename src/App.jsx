@@ -10,6 +10,9 @@ import Birthdays from './components/Birthdays.jsx'
 import JeanMariePierre from './components/JeanMariePierre.jsx'
 import Login from './components/Login.jsx'
 
+// Shown in the footer; bump this when cutting a new release tag.
+const APP_VERSION = 'pbf-v1.3'
+
 const TABS = [
   { id: 'demographics', label: 'Demographics', hint: 'Admin' },
   { id: 'tree', label: 'Family Tree', hint: 'Lineage' },
@@ -110,6 +113,8 @@ export default function App() {
         >
           📖 User Guide
         </a>
+        <span className="footer-dot">•</span>
+        <span className="footer-version">{APP_VERSION}</span>
       </footer>
     </div>
   )
