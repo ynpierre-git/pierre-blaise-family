@@ -1602,9 +1602,15 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-lift);
   animation: pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  /* Cap the height and let the body scroll inside, so tall forms (gallery, life
+     story…) stay reachable by mouse/touch, not just by tabbing. */
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
 }
 
 .modal-head {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1638,6 +1644,9 @@
 
 .modal-body {
   padding: 1.6rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .modal-actions {
@@ -2682,6 +2691,142 @@
 .whois-action {
   font-size: 0.82rem;
   padding: 0.4rem 0.8rem;
+}
+
+/* ===== Who is? — life story ===== */
+.whois-story p {
+  margin: 0 0 0.85rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.whois-story p:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Who is? — photo gallery ===== */
+.whois-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.8rem;
+}
+
+.whois-gallery-item {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--parchment-deep);
+  cursor: zoom-in;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.whois-gallery-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+}
+
+.whois-gallery-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.whois-gallery-cap {
+  display: block;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: var(--ink-soft);
+  text-align: left;
+  background: var(--card);
+}
+
+/* ===== Demographics — gallery editor ===== */
+.gallery-edit {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.gallery-edit-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+}
+
+.gallery-edit-item img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.gallery-caption-input {
+  width: 100%;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--parchment);
+}
+
+.gallery-caption-input:focus {
+  outline: none;
+  border-color: var(--cobalt);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(29, 93, 115, 0.16);
+}
+
+.gallery-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: var(--burgundy);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  box-shadow: var(--shadow-soft);
+}
+
+.gallery-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  aspect-ratio: 1 / 1;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.gallery-add:hover {
+  border-color: var(--cobalt);
+  color: var(--cobalt);
+  background: rgba(29, 93, 115, 0.05);
+}
+
+.gallery-add-plus {
+  font-size: 1.6rem;
+  line-height: 1;
 }
 
 /* ===== How Related? ===== */

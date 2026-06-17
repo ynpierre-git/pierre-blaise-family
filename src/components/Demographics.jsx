@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Avatar from './Avatar.jsx'
-import { membersApi, fileToDataUrl } from '../api.js'
+import { membersApi, fileToDataUrl, uploadEventMedia, eventMediaApi } from '../api.js'
+import { sizedImage } from './Lightbox.jsx'
 
 const EMPTY = {
   firstName: '',
@@ -20,6 +21,8 @@ const EMPTY = {
   deceased: false,
   dateOfDeath: '',
   notes: '',
+  story: '',
+  gallery: [],
 }
 
 const MARITAL_STATUSES = [
@@ -63,6 +66,8 @@ export default function Demographics({ onLogout }) {
   const [bday, setBdayState] = useState({ y: '', m: '', d: '' })
   // Roster search — quickly find a member to edit.
   const [rosterQuery, setRosterQuery] = useState('')
+  // Gallery upload progress (count of files still uploading).
+  const [galleryBusy, setGalleryBusy] = useState(0)
 
   // Load records from the database.
   useEffect(() => {
@@ -121,6 +126,41 @@ export default function Demographics({ onLogout }) {
     const url = await fileToDataUrl(file)
     setForm((f) => ({ ...f, photo: url }))
     e.target.value = ''
+  }
+
+  // Gallery photos upload straight to Storage (reusing the event-media flow) so
+  // only their URLs live on the member record. They upload immediately; the
+  // record is saved when the form is submitted.
+  const handleGalleryAdd = async (e) => {
+    const files = Array.from(e.target.files || [])
+    e.target.value = ''
+    if (!files.length) return
+    setGalleryBusy((n) => n + files.length)
+    for (const file of files) {
+      try {
+        const { url, path } = await uploadEventMedia(file)
+        const item = { id: `g${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, url, path, caption: '' }
+        setForm((f) => ({ ...f, gallery: [...(f.gallery || []), item] }))
+      } catch (err) {
+        setFormError(err.message || 'A photo failed to upload.')
+      } finally {
+        setGalleryBusy((n) => n - 1)
+      }
+    }
+  }
+
+  const setCaption = (id) => (e) => {
+    const caption = e.target.value
+    setForm((f) => ({
+      ...f,
+      gallery: (f.gallery || []).map((g) => (g.id === id ? { ...g, caption } : g)),
+    }))
+  }
+
+  const removeGalleryItem = (item) => {
+    setForm((f) => ({ ...f, gallery: (f.gallery || []).filter((g) => g.id !== item.id) }))
+    // Best-effort cleanup of the stored object (ignore failure — worst case is an orphan).
+    if (item.path) eventMediaApi.deleteObject(item.path).catch(() => {})
   }
 
   const openModal = () => {
@@ -587,6 +627,55 @@ export default function Demographics({ onLogout }) {
                 />
               </label>
 
+              <p className="form-subhead">Life story &amp; photos</p>
+
+              <label className="field">
+                <span>
+                  Life story <span className="field-hint">(shown on the Who is? page)</span>
+                </span>
+                <textarea
+                  rows="6"
+                  value={form.story || ''}
+                  onChange={update('story')}
+                  placeholder="Tell their story — upbringing, milestones, character, memories… Press Enter for new paragraphs."
+                />
+              </label>
+
+              <div className="field">
+                <span>
+                  Photo gallery <span className="field-hint">(optional — add several)</span>
+                </span>
+                <div className="gallery-edit">
+                  {(form.gallery || []).map((g) => (
+                    <div key={g.id} className="gallery-edit-item">
+                      <img src={sizedImage(g.url, 240)} alt={g.caption || ''} />
+                      <input
+                        type="text"
+                        className="gallery-caption-input"
+                        value={g.caption || ''}
+                        onChange={setCaption(g.id)}
+                        placeholder="Caption (optional)"
+                        aria-label="Photo caption"
+                      />
+                      <button
+                        type="button"
+                        className="gallery-remove"
+                        onClick={() => removeGalleryItem(g)}
+                        aria-label="Remove photo"
+                        title="Remove photo"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <label className="gallery-add">
+                    <input type="file" accept="image/*" multiple hidden onChange={handleGalleryAdd} />
+                    <span className="gallery-add-plus" aria-hidden="true">＋</span>
+                    <span>{galleryBusy > 0 ? `Uploading ${galleryBusy}…` : 'Add photos'}</span>
+                  </label>
+                </div>
+              </div>
+
               <label className="field field-check">
                 <input
                   type="checkbox"
@@ -643,8 +732,14 @@ export default function Demographics({ onLogout }) {
                 <button type="button" className="btn-ghost" onClick={closeModal}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary" disabled={saving}>
-                  {saving ? 'Saving…' : editingId ? 'Save Changes' : 'Save Record'}
+                <button type="submit" className="btn-primary" disabled={saving || galleryBusy > 0}>
+                  {saving
+                    ? 'Saving…'
+                    : galleryBusy > 0
+                      ? 'Uploading…'
+                      : editingId
+                        ? 'Save Changes'
+                        : 'Save Record'}
                 </button>
               </div>
             </form>

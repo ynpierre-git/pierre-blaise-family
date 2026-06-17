@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import Avatar from './Avatar.jsx'
+import Lightbox, { sizedImage } from './Lightbox.jsx'
 import { membersApi } from '../api.js'
 
 const MONTHS = [
@@ -13,6 +14,7 @@ export default function WhoIs({ initialId = null }) {
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState(initialId ? String(initialId) : null)
   const [copied, setCopied] = useState(false)
+  const [lightbox, setLightbox] = useState(null) // { items, index }
 
   const load = () => {
     setError('')
@@ -70,6 +72,24 @@ export default function WhoIs({ initialId = null }) {
     }
   }
 
+  // Photo-gallery lightbox.
+  const openLightbox = (items, index) => setLightbox({ items, index })
+  const closeLightbox = () => setLightbox(null)
+  const stepLightbox = (d) =>
+    setLightbox((lb) =>
+      lb ? { ...lb, index: (lb.index + d + lb.items.length) % lb.items.length } : lb,
+    )
+  useEffect(() => {
+    if (!lightbox) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeLightbox()
+      else if (e.key === 'ArrowLeft') stepLightbox(-1)
+      else if (e.key === 'ArrowRight') stepLightbox(1)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [lightbox])
+
   const children = useMemo(() => {
     if (!selected) return []
     return (members || [])
@@ -84,6 +104,12 @@ export default function WhoIs({ initialId = null }) {
   const lineage = useMemo(
     () => (selected ? lineageToRoot(selected, byId) : []),
     [selected, byId],
+  )
+
+  const gallery = selected?.gallery || []
+  const galleryItems = useMemo(
+    () => gallery.map((g) => ({ type: 'image', url: g.url, name: g.caption || '' })),
+    [gallery],
   )
 
   const spouse = selected && hasRef(selected.spouseId, byId)
@@ -229,6 +255,48 @@ export default function WhoIs({ initialId = null }) {
                 </div>
               </div>
 
+              {selected.story && selected.story.trim() && (
+                <div className="whois-card card">
+                  <h4 className="whois-section-title">Life story</h4>
+                  <div className="whois-story">
+                    {selected.story
+                      .split(/\n{2,}/)
+                      .filter((p) => p.trim())
+                      .map((para, i) => (
+                        <p key={i}>
+                          {para.split(/\n/).map((line, j, arr) => (
+                            <span key={j}>
+                              {line}
+                              {j < arr.length - 1 && <br />}
+                            </span>
+                          ))}
+                        </p>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {gallery.length > 0 && (
+                <div className="whois-card card">
+                  <h4 className="whois-section-title">
+                    Photos {gallery.length > 1 && `(${gallery.length})`}
+                  </h4>
+                  <div className="whois-gallery">
+                    {gallery.map((g, i) => (
+                      <button
+                        type="button"
+                        key={g.id || i}
+                        className="whois-gallery-item"
+                        onClick={() => openLightbox(galleryItems, i)}
+                      >
+                        <img src={sizedImage(g.url, 500)} alt={g.caption || ''} loading="lazy" />
+                        {g.caption && <span className="whois-gallery-cap">{g.caption}</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="whois-card card">
                 <h4 className="whois-section-title">Immediate family</h4>
 
@@ -301,6 +369,17 @@ export default function WhoIs({ initialId = null }) {
             </div>
           )}
         </>
+      )}
+
+      {lightbox && (
+        <Lightbox
+          item={lightbox.items[lightbox.index]}
+          count={lightbox.items.length}
+          index={lightbox.index}
+          onPrev={() => stepLightbox(-1)}
+          onNext={() => stepLightbox(1)}
+          onClose={closeLightbox}
+        />
       )}
     </section>
   )
