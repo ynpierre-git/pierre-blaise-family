@@ -28,10 +28,16 @@ function sex(gender) {
   return 'U'
 }
 
+// Collapse any CR/LF/tabs to a single space so a stray newline in a member
+// field can't inject extra GEDCOM lines / corrupt the file structure.
+function oneLine(s) {
+  return String(s == null ? '' : s).replace(/[\r\n\t]+/g, ' ').trim()
+}
+
 // GEDCOM splits names as "Given /Surname/".
 function nameLine(m) {
-  const given = (m.firstName || '').trim()
-  const sur = (m.lastName || '').trim()
+  const given = oneLine(m.firstName)
+  const sur = oneLine(m.lastName)
   return `${given} /${sur}/`.trim()
 }
 
@@ -125,7 +131,7 @@ export function buildGedcom(members, { treeName = 'Pierre-Blaise Family Tree' } 
     lines.push(`1 SEX ${sex(m.gender)}`)
 
     const bdate = gedDate(m.birthday)
-    const bplace = [m.city, m.country].filter(Boolean).join(', ')
+    const bplace = oneLine([m.city, m.country].filter(Boolean).join(', '))
     if (bdate || bplace) {
       lines.push('1 BIRT')
       if (bdate) lines.push(`2 DATE ${bdate}`)
@@ -142,8 +148,8 @@ export function buildGedcom(members, { treeName = 'Pierre-Blaise Family Tree' } 
     if (famcOf.has(id)) lines.push(`1 FAMC ${famcOf.get(id)}`)
     for (const fx of famsOf.get(id) || []) lines.push(`1 FAMS ${fx}`)
 
-    if (m.email) lines.push(`1 EMAIL ${m.email}`)
-    if (m.phone) lines.push(`1 PHON ${m.phone}`)
+    if (m.email) lines.push(`1 EMAIL ${oneLine(m.email)}`)
+    if (m.phone) lines.push(`1 PHON ${oneLine(m.phone)}`)
     if (m.notes) lines.push(...noteLines(1, m.notes))
   }
 
