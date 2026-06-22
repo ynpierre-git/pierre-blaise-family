@@ -120,6 +120,10 @@ The **Who is?** tab is a quick lookup for a single family member.
    - A large **photo** and their full **details** (born, where they were born,
      branch, marital status, contact info, and — for those who have passed — the
      date of passing).
+   - **Life story** — a longer biography, when one has been added.
+   - **Photo gallery** — extra photos of the person, each with an optional
+     caption. Click any photo to open it full-size; use the **‹ ›** arrows,
+     **Esc**, or swipe to browse.
    - **Immediate family** — parents, spouse/partner, and children. Each name is
      a link, so you can hop straight to that person's profile.
    - **Line to the family root** — the direct chain of ancestors all the way back
@@ -239,6 +243,11 @@ photo** if you have one. Notable fields:
 - **Deceased** — tick *"This person is deceased"* at the bottom of the form to
   record a **date of death** (also optional). On the tree and profiles this shows
   as a small **†**, and the *Who is?* page notes *"Departed this life on …"*.
+- **Life story** — a free-text biography shown on the person's *Who is?* profile.
+  Leave a blank line between paragraphs to keep them separated.
+- **Photo gallery** — add as many extra photos as you like, each with an optional
+  **caption**. Photos upload directly to secure storage, so large files are fine.
+  Use the **×** on a photo to remove it.
 
 ![Add a family member](screenshots/08-member-form.png)
 
