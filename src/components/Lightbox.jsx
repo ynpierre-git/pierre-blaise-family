@@ -52,10 +52,20 @@ export default function Lightbox({ item, count, index, onPrev, onNext, onClose }
 }
 
 // Photos are stored at full resolution (often many MB). Supabase Storage can
-// resize on the fly via its image-render endpoint, so we request a small version
-// for thumbnails and a medium one for the lightbox instead of the originals.
-// Only applies to public Storage image URLs; base64/other URLs pass through.
+// resize on the fly via its image-render endpoint, so we'd normally request a
+// small version for thumbnails and a medium one for the lightbox.
+//
+// BUT on-the-fly resizing ("Image Transformation") is a paid Supabase feature.
+// When it's disabled, the /render/image/ endpoint returns 403 FeatureNotEnabled
+// and every event photo fails to load. Since it's off on the current project,
+// we serve the original /object/public/ URL (which always works) instead.
+//
+// To re-enable smaller/faster images: turn on Image Transformation in Supabase
+// (Storage → Settings) and flip STORAGE_IMAGE_TRANSFORM to true.
+const STORAGE_IMAGE_TRANSFORM = false
+
 export function sizedImage(url, width, quality = 72) {
+  if (!STORAGE_IMAGE_TRANSFORM) return url
   if (!url || !url.includes('/storage/v1/object/public/')) return url
   const rendered = url.replace(
     '/storage/v1/object/public/',
