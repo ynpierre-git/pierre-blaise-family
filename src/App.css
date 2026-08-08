@@ -3041,8 +3041,10 @@
 /* ===== Print / Save-as-PDF (family tree & profiles) ===== */
 @media print {
   body {
-    background: #fff;
-    background-image: none;
+    /* index.css loads after this file and paints a fixed cover photo on
+       <body>; !important is needed to keep printed pages clean white. */
+    background: #fff !important;
+    background-image: none !important;
   }
   .app {
     max-width: none;
@@ -3098,12 +3100,16 @@
 
   body.printing-poster .tree-poster-root {
     display: block;
+    position: relative;
+    z-index: 2147483647; /* sit above any fixed background layer */
+    background: #fff;
   }
 
   .tp-page {
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
+    background: #fff; /* opaque so the body cover photo can't bleed through */
     break-after: page;
     page-break-after: always;
     break-inside: avoid;

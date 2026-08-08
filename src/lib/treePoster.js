@@ -48,6 +48,11 @@ export function printTreePoster(treeEl) {
   document.body.appendChild(root)
   document.body.classList.add('printing-poster')
 
+  // Force a synchronous layout of the freshly-inserted tiles before printing.
+  // Without this, Chrome can take its print snapshot before the new (large)
+  // DOM has been laid out, producing a blank or stale preview.
+  void root.offsetHeight
+
   let done = false
   const cleanup = () => {
     if (done) return
