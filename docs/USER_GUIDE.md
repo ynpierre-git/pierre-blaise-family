@@ -87,15 +87,45 @@ unrelated is hidden.
 ### Printing or saving the tree as a PDF
 
 Use the **🖨 Print / PDF** button (top of the Family Tree) to make a paper copy
-or a PDF of the whole tree:
+or a PDF of the whole tree.
+
+The family tree is usually **wider than one page**, so it prints as a
+**multi-page poster**: a **cover page** showing a grid map, then one sheet per
+section. You trim the white edges and tape the sheets together into one large
+tree. (A small tree may fit on a single sheet.)
 
 1. Click **🖨 Print / PDF**. Every branch is opened automatically first so
-   nothing is left hidden, then your browser's print window appears.
-2. To save a file instead of printing, set **Destination** (or "Printer") to
-   **Save as PDF**.
-3. For a wide tree, choose **Landscape** and let it scale to fit the page.
+   nothing is hidden, then Chrome's print window appears.
+2. Match the settings below **exactly** — otherwise the sheets won't line up.
+3. Print (or **Save as PDF**), then follow the cover page: trim the white
+   margins and tape the sheets together in the printed grid order
+   (*R1·C1*, *R1·C2*, …).
 
-> 💡 Printing works best in a full web browser (Chrome, Edge, Safari, Firefox).
+#### Exact settings — Google Chrome
+
+In Chrome's print window, set each of these:
+
+| Setting | Choose | Why |
+| --- | --- | --- |
+| **Destination** | Your printer, or **Save as PDF** | Where it goes |
+| **Pages** | **All** | Prints the cover + every tile |
+| **Layout** | **Landscape** | The tree is wide |
+| **Paper size** | **A4** | The sheets are sized for A4 |
+| **Scale** | **Custom → 100** | Keeps tiles aligned; **do *not* use "Fit to page"** |
+| **Margins** | **Default** | The sheets already leave the right border to trim |
+| **Background graphics** | **On (ticked)** | Prints the card colours and the grid map |
+
+To reach the last three, click **More settings** to expand the panel.
+
+> ⚠️ The one setting that breaks the poster is **Scale**. If it's on
+> *"Fit to page"* / *"Fit to printable area"*, Chrome shrinks each sheet and the
+> pieces no longer match up. Always set **Scale → Custom → 100**.
+>
+> 💡 Printing works in any full web browser (Chrome, Edge, Safari, Firefox).
+> The steps above are for Chrome; Edge is almost identical, and Safari/Firefox
+> have the same options under slightly different names (e.g. Firefox groups
+> **Scale** and **Background graphics** together, and Safari's are in the
+> **⋯ / expand** area of its print sheet).
 
 ### Exporting the family (GEDCOM)
 
