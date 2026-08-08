@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { membersApi } from '../api.js'
 import { downloadGedcom } from '../lib/gedcom.js'
+import { printTreePoster } from '../lib/treePoster.js'
 
 const GENERATION_LABELS = [
   'First Generation',
@@ -38,6 +39,7 @@ export default function FamilyTree() {
   // stay expanded). The component remounts each time the tab is opened, so this
   // runs per visit.
   const didInitCollapse = useRef(false)
+  const treeRef = useRef(null)
   useEffect(() => {
     if (!didInitCollapse.current && members && members.length) {
       setCollapsed(new Set(deepCollapseKeys))
@@ -84,13 +86,14 @@ export default function FamilyTree() {
   const expandAll = () => setCollapsed(new Set())
   const collapseAll = () => setCollapsed(new Set(collapsibleKeys))
 
-  // Print the whole tree: expand every branch first so nothing is clipped.
-  // flushSync applies the expansion to the DOM synchronously so window.print()
-  // still runs inside the click's user-gesture context (a deferred print via
-  // setTimeout is silently ignored by some browsers).
+  // Print the whole tree as a multi-page poster. Expand every branch first so
+  // nothing is collapsed, then slice the full-width tree into page tiles. The
+  // flushSync applies the expansion to the DOM synchronously so the measure +
+  // print still run inside the click's user-gesture context (a deferred print
+  // via setTimeout is silently ignored by some browsers).
   const printTree = () => {
     flushSync(() => setCollapsed(new Set()))
-    window.print()
+    printTreePoster(treeRef.current)
   }
 
   const exportGedcom = () => downloadGedcom(members || [])
@@ -169,7 +172,7 @@ export default function FamilyTree() {
         <>
           <Legend />
           <div className="ftree-scroll">
-            <div className="ftree">
+            <div className="ftree" ref={treeRef}>
               {displayRoots.map((root) => (
                 <ul key={root.person.id} className="ftree-rootlist">
                   <TreeNode

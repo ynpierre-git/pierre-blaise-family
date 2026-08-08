@@ -3032,6 +3032,12 @@
   }
 }
 
+/* The poster print layer is built on the fly and only ever shown while
+   printing — it must stay invisible on screen. */
+.tree-poster-root {
+  display: none;
+}
+
 /* ===== Print / Save-as-PDF (family tree & profiles) ===== */
 @media print {
   body {
@@ -3074,5 +3080,105 @@
   .whois-card,
   .bday-card {
     break-inside: avoid;
+  }
+
+  /* ---- Multi-page poster tiling ----
+     When printTreePoster() adds `.printing-poster` to <body>, the live app is
+     hidden and only the generated tile pages print. Each `.tp-page` is exactly
+     one A4-landscape content box; the tree clone inside is windowed by a
+     translate so each sheet shows a different slice. */
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  body.printing-poster > *:not(.tree-poster-root) {
+    display: none !important;
+  }
+
+  body.printing-poster .tree-poster-root {
+    display: block;
+  }
+
+  .tp-page {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+  }
+  .tp-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .tp-view {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tp-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: top left;
+  }
+
+  /* The tree clone should print flat — no hover lift, no toggle buttons. */
+  .tree-poster-root .ftree-toggle {
+    display: none !important;
+  }
+  .tree-poster-root .couple-card {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .tp-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: #6b6b6b;
+    border-top: 1px dashed #cfcfcf;
+    background: #fff;
+  }
+
+  /* Cover page: the assembly map. */
+  .tp-cover {
+    padding: 14mm;
+    color: var(--ink, #2b2b2b);
+  }
+  .tp-cover h1 {
+    font-family: var(--font-display, serif);
+    font-size: 26px;
+    margin: 0 0 0.6rem;
+  }
+  .tp-cover p {
+    font-family: var(--font-body, sans-serif);
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 60ch;
+    margin: 0 0 1.2rem;
+  }
+  .tp-map {
+    display: grid;
+    gap: 4px;
+    max-width: 100%;
+  }
+  .tp-map-cell {
+    border: 1px solid #bdbdbd;
+    background: #f4f1e8;
+    font-family: var(--font-body, sans-serif);
+    font-size: 11px;
+    text-align: center;
+    padding: 10px 4px;
+    color: #555;
   }
 }
