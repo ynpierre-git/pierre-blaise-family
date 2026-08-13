@@ -1868,7 +1868,7 @@
   border-top: 3px solid var(--forest);
   border-radius: 10px;
   box-shadow: var(--shadow-soft);
-  padding: 0.15rem 0.2rem;
+  padding: 0.22rem 0.3rem;
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s,
     border-color 0.25s;
 }
@@ -1890,7 +1890,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.02rem;
-  padding: 0.22rem 0.5rem;
+  padding: 0.3rem 0.6rem;
   line-height: 1.1;
 }
 
@@ -1904,7 +1904,7 @@
 .chip-name {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.98rem;
   color: var(--ink);
 }
 
@@ -1912,12 +1912,12 @@
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   color: var(--forest);
 }
 
 .chip-born {
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   letter-spacing: 0.03em;
   color: var(--ochre);
   font-weight: 600;
@@ -1929,7 +1929,7 @@
   padding: 0 0.05rem;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--burgundy);
 }
 
